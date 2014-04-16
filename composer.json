@@ -14,7 +14,8 @@
 
     "autoload" : {
         "psr-4" : {
-            "UdbApi\\" : "src/"
+            "Udb\\Domain\\" : "src/",
+            "UdbTest\\Domain\\" : "tests/unit/"
         }
     }
 }
