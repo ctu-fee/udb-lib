@@ -19,6 +19,56 @@ class User
      */
     protected $username;
 
+    /**
+     * @var string
+     */
+    protected $firstName;
+
+    /**
+     * @var string
+     */
+    protected $lastName;
+
+    /**
+     * @var string
+     */
+    protected $fullName;
+
+    /**
+     * @var string
+     */
+    protected $email;
+
+    /**
+     * @var string
+     */
+    protected $employeeType;
+
+    /**
+     * @var string
+     */
+    protected $status;
+
+    protected $workPhone;
+
+    protected $mobilePhone;
+
+    /**
+     * @var string
+     */
+    protected $room;
+
+    /**
+     * @var string
+     */
+    protected $department;
+
+    protected $homepage;
+
+    protected $emailForwarding;
+
+    protected $emailAlternative;
+
 
     /**
      * @return int

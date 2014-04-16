@@ -3,7 +3,7 @@
     "description" : "UDB Library - provides interface for accessing the user database",
 
     "require" : {
-        "php" : ">=5.3.23",
+        "php" : ">=5.4.0",
         "zendframework/zend-ldap" : "~2.3",
         "zendframework/zend-stdlib" : "~2.3"
     },
