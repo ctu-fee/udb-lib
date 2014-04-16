@@ -19,7 +19,7 @@ abstract class AbstractStringValueObject
      */
     public function __construct($value)
     {
-        $this->value = $value;
+        $this->value = $this->normalizeValue($value);
     }
 
 
@@ -38,5 +38,17 @@ abstract class AbstractStringValueObject
     public function __toString()
     {
         return $this->getValue();
+    }
+
+
+    /**
+     * Tries to convert the value to the acceptable internal format.
+     * 
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function normalizeValue($value)
+    {
+        return $value;
     }
 }

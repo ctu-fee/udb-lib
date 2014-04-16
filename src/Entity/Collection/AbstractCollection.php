@@ -11,12 +11,12 @@ use Zend\Stdlib\Guard\ArrayOrTraversableGuardTrait;
  */
 abstract class AbstractCollection implements CollectionInterface
 {
-    
+
     /**
      * Traits
      */
     use ArrayOrTraversableGuardTrait;
-
+    
     /**
      * @var ArrayObject
      */
@@ -59,6 +59,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function append($item)
     {
+        $item = $this->normalizeItem($item);
         $this->check($item);
         $this->items->append($item);
     }
@@ -107,7 +108,7 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function get($index, $defaultValue = null)
     {
-        if ($this->items->offsetExists($index)) {
+        if ($this->offsetExists($index)) {
             return $this->items->offsetGet($index);
         }
         
@@ -121,8 +122,80 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function set($index, $item)
     {
+        $item = $this->normalizeItem($item);
         $this->check($item);
         $this->items->offsetSet($index, $item);
+    }
+
+
+    /**
+     * {@inhertidoc}
+     * @see \Udb\Domain\Entity\Collection\CollectionInterface::toArray()
+     */
+    public function toArray()
+    {
+        return $this->items->getArrayCopy();
+    }
+
+
+    /**
+     * {@inhertidoc}
+     * @see IteratorAggregate::getIterator()
+     */
+    public function getIterator()
+    {
+        return $this->items->getIterator();
+    }
+
+
+    /**
+     * {@inhertidoc}
+     * @see ArrayAccess::offsetExists()
+     */
+    public function offsetExists($index)
+    {
+        return $this->items->offsetExists($index);
+    }
+
+
+    /**
+     * {@inhertidoc}
+     * @see ArrayAccess::offsetGet()
+     */
+    public function offsetGet($index)
+    {
+        return $this->get($index);
+    }
+
+
+    /**
+     * {@inhertidoc}
+     * @see ArrayAccess::offsetSet()
+     */
+    public function offsetSet($index, $item)
+    {
+        return $this->set($index, $item);
+    }
+
+
+    /**
+     * {@inhertidoc}
+     * @see ArrayAccess::offsetUnset()
+     */
+    public function offsetUnset($index)
+    {
+        $this->items->offsetUnset($index);
+    }
+
+
+    /**
+     * Tries to transform the item to an acceptable format.
+     *
+     * @param mixed $item
+     */
+    protected function normalizeItem($item)
+    {
+        return $item;
     }
 
 

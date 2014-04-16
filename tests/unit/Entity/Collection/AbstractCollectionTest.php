@@ -146,6 +146,59 @@ class AbstractCollectionTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testToArray()
+    {
+        $collection = $this->createAbstractCollection();
+        $collection->append('foo');
+        $collection->append('bar');
+        
+        $this->assertSame(array(
+            'foo',
+            'bar'
+        ), $collection->toArray());
+    }
+
+
+    public function testGetIterator()
+    {
+        $collection = $this->createAbstractCollection();
+        $this->assertInstanceOf('ArrayIterator', $collection->getIterator());
+    }
+
+
+    public function testOffsetExists()
+    {
+        $collection = $this->createAbstractCollection();
+        
+        $this->assertFalse($collection->offsetExists('foo'));
+        
+        $collection->set('foo', 'bar');
+        
+        $this->assertTrue($collection->offsetExists('foo'));
+    }
+
+
+    public function testOffsetGetSet()
+    {
+        $collection = $this->createAbstractCollection();
+        $collection->offsetSet('foo', 'bar');
+        
+        $this->assertSame('bar', $collection->offsetGet('foo'));
+    }
+
+
+    public function testOffsetUnset()
+    {
+        $collection = $this->createAbstractCollection();
+        $collection->offsetSet('foo', 'bar');
+        
+        $this->assertSame('bar', $collection->get('foo'));
+        
+        $collection->offsetUnset('foo');
+        $this->assertNull($collection->get('foo'));
+    }
+
+
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
