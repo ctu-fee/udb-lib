@@ -19,27 +19,30 @@ class PhoneCollectionTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testIsValidWithValidItem()
+    public function testAppendInvalid()
     {
-        $this->assertTrue($this->col->isValid(new Phone('123')));
-    }
-
-
-    public function testIsValidWithInvalidItem()
-    {
-        $this->assertFalse($this->col->isValid(new EmailAddress('foo@bar')));
-    }
-
-
-    public function testToPlainArray()
-    {
-        $this->col->append(new Phone('123'));
-        $this->col->append(new Phone('456'));
+        $this->setExpectedException('Udb\Domain\Entity\Collection\Exception\InvalidItemException', 'Invalid item');
         
-        $this->assertSame(array(
-            '123',
-            '456'
-        ), $this->col->toPlainArray());
+        $this->col->append(new EmailAddress('foo@bar'));
+    }
+
+
+    public function testAppendObject()
+    {
+        $phone = new Phone('123');
+        
+        $this->col->append($phone);
+        $this->assertSame($phone, $this->col->get(0));
+    }
+
+
+    public function testAppendString()
+    {
+        $value = '123';
+        
+        $this->col->append($value);
+        $this->assertSame($value, $this->col->get(0)
+            ->getValue());
     }
 
 

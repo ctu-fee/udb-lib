@@ -5,33 +5,28 @@ namespace Udb\Domain\Entity\Collection;
 use Udb\Domain\Entity\Phone;
 
 
-class PhoneCollection extends AbstractCollection
+class PhoneCollection extends AbstractStringValueObjectCollection
 {
 
 
-    public function isValid($item)
+    /**
+     * {@inhertidoc}
+     * @see \Udb\Domain\Entity\Collection\AbstractCollection::isValid()
+     */
+    protected function isValid($item)
     {
         return ($item instanceof Phone);
     }
 
 
-    public function toPlainArray()
+    /**
+     * Creates a Phone value object from the provided value.
+     * 
+     * @param mixed $item
+     * @return Phone
+     */
+    protected function createValueObject($item)
     {
-        $values = array();
-        foreach ($this->items as $item) {
-            $values[] = $item->getValue();
-        }
-        
-        return $values;
-    }
-
-
-    protected function normalizeItem($item)
-    {
-        try {
-            return new Phone($item);
-        } catch (\Exception $e) {}
-        
-        return $item;
+        return new Phone($item);
     }
 }

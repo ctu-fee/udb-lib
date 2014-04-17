@@ -11,12 +11,12 @@ use Zend\Stdlib\Guard\ArrayOrTraversableGuardTrait;
  */
 abstract class AbstractCollection implements CollectionInterface
 {
-
+    
     /**
      * Traits
      */
     use ArrayOrTraversableGuardTrait;
-    
+
     /**
      * @var ArrayObject
      */
@@ -77,18 +77,6 @@ abstract class AbstractCollection implements CollectionInterface
             $itemType = (is_object($item)) ? get_class($item) : gettype($item);
             throw new Exception\InvalidItemException(sprintf("Invalid item '%s' for collection '%s'", $itemType, get_class($this)));
         }
-    }
-
-
-    /**
-     * Returns true, if the item can be added to the collection.
-     * 
-     * @param mixed $item
-     * @return boolean
-     */
-    public function isValid($item)
-    {
-        return true;
     }
 
 
@@ -196,6 +184,18 @@ abstract class AbstractCollection implements CollectionInterface
     protected function normalizeItem($item)
     {
         return $item;
+    }
+
+
+    /**
+     * Returns true, if the item can be added to the collection.
+     *
+     * @param mixed $item
+     * @return boolean
+     */
+    protected function isValid($item)
+    {
+        return true;
     }
 
 
