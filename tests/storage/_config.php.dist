@@ -1,0 +1,22 @@
+<?php
+
+return array(
+    
+    'ldap_client' => array(
+        'host' => 'ldap.example.org',
+        'useSsl' => true,
+        'username' => 'uid=proxy,ou=special users,o=example.org',
+        'password' => 'xxx',
+        'bindRequiresDn' => 'true',
+        'accountCanonicalForm' => \Zend\Ldap\Ldap::ACCTNAME_FORM_DN,
+        'accountFilterFormat' => '(&(objectClass=person)(uid=%s))',
+        'accountDomainName' => 'example.org',
+        'accountDomainNameShort' => 'example',
+        'baseDn' => 'o=example.org'
+    ),
+    
+    'tests' => array(
+        'testuid' => 'testuser',
+        'testdn' => 'uid=testuser,ou=people,o=feld.cvut.cz'
+    )
+);

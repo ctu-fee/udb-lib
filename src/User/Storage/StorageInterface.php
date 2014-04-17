@@ -7,10 +7,10 @@ interface StorageInterface
 {
 
 
-    public function fetchUserRecord($userId);
+    public function fetchUserRecord($uid);
 
 
-    public function updateUserRecord($userId, array $data);
+    public function updateUserRecord($uid, array $data);
 
 
     public function fetchUserRecords(array $filters = array());

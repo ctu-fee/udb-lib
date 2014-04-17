@@ -2,7 +2,6 @@
 
 namespace Udb\Domain\User;
 
-use Udb\Domain\Entity\Exception\InvalidValueException;
 use Udb\Domain\Entity\Collection\RoomCollection;
 use Udb\Domain\Entity\Collection\LabelledUrlCollection;
 use Udb\Domain\Entity\Collection\EmailAddressCollection;
@@ -105,11 +104,7 @@ class User
      */
     public function setId($id)
     {
-        if (! is_scalar($id)) {
-            throw new InvalidValueException('The ID should be a scalar value (integer)');
-        }
-        
-        $this->id = intval($id);
+        $this->id = $id;
     }
 
 
@@ -127,7 +122,7 @@ class User
      */
     public function setUsername($username)
     {
-        $this->username = (string) $username;
+        $this->username = $username;
     }
 
 
@@ -145,7 +140,7 @@ class User
      */
     public function setFirstName($firstName)
     {
-        $this->firstName = (string) $firstName;
+        $this->firstName = $firstName;
     }
 
 
@@ -163,7 +158,7 @@ class User
      */
     public function setLastName($lastName)
     {
-        $this->lastName = (string) $lastName;
+        $this->lastName = $lastName;
     }
 
 
@@ -181,7 +176,7 @@ class User
      */
     public function setFullName($fullName)
     {
-        $this->fullName = (string) $fullName;
+        $this->fullName = $fullName;
     }
 
 
@@ -199,7 +194,7 @@ class User
      */
     public function setEmail($email)
     {
-        $this->email = (string) $email;
+        $this->email = $email;
     }
 
 
@@ -217,7 +212,7 @@ class User
      */
     public function setEmployeeType($employeeType)
     {
-        $this->employeeType = (string) $employeeType;
+        $this->employeeType = $employeeType;
     }
 
 
@@ -235,7 +230,7 @@ class User
      */
     public function setStatus($status)
     {
-        $this->status = (string) $status;
+        $this->status = $status;
     }
 
 
@@ -334,7 +329,7 @@ class User
      */
     public function setDepartment($department)
     {
-        $this->department = (string) $department;
+        $this->department = $department;
     }
 
 
@@ -424,7 +419,7 @@ class User
     protected function checkCollectionData($value, $collectionName)
     {
         if (! is_array($value)) {
-            throw new InvalidValueException(sprintf("Expecting %s or array", $collectionName));
+            throw new Exception\InvalidValueException(sprintf("Expecting %s or array", $collectionName));
         }
     }
 }
