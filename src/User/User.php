@@ -2,6 +2,7 @@
 
 namespace Udb\Domain\User;
 
+use Udb\Domain\Entity\Exception\InvalidValueException;
 use Udb\Domain\Entity\Collection\RoomCollection;
 use Udb\Domain\Entity\Collection\LabelledUrlCollection;
 use Udb\Domain\Entity\Collection\EmailAddressCollection;
@@ -419,7 +420,7 @@ class User
     protected function checkCollectionData($value, $collectionName)
     {
         if (! is_array($value)) {
-            throw new Exception\InvalidValueException(sprintf("Expecting %s or array", $collectionName));
+            throw new InvalidValueException(sprintf("Expecting %s or array", $collectionName));
         }
     }
 }
