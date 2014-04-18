@@ -35,9 +35,9 @@ class UserRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testGetUserById()
+    public function testFetchUserByUid()
     {
-        $userId = 123;
+        $uid = 'testuser';
         $userData = array(
             'foo' => 'bar'
         );
@@ -47,7 +47,7 @@ class UserRepositoryTest extends \PHPUnit_Framework_TestCase
         $storage = $this->createStorageMock();
         $storage->expects($this->once())
             ->method('fetchUserRecord')
-            ->with($userId)
+            ->with($uid)
             ->will($this->returnValue($userData));
         
         $factory = $this->createFactoryMock();
@@ -63,7 +63,7 @@ class UserRepositoryTest extends \PHPUnit_Framework_TestCase
         
         $repository = new UserRepository($storage, $hydrator, $factory);
         
-        $this->assertSame($hydratedUser, $repository->getUserById($userId));
+        $this->assertSame($hydratedUser, $repository->fetchUserByUid($uid));
     }
     
     /*

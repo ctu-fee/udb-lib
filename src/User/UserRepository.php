@@ -103,12 +103,15 @@ class UserRepository
     }
 
 
-    public function getUserById($userId)
+    public function fetchUserByUid($uid)
     {
-        $userData = $this->getStorage()->fetchUserRecord($userId);
+        $userData = $this->getStorage()->fetchUserRecord($uid);
         $user = $this->getFactory()->createUser();
         $user = $this->getHydrator()->hydrate($userData, $user);
         
         return $user;
     }
+    
+    
+    
 }
