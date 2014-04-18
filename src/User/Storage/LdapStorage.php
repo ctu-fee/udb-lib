@@ -2,13 +2,22 @@
 
 namespace Udb\Domain\User\Storage;
 
+use Zend\Stdlib\Parameters;
 use Zend\Ldap\Ldap;
+use Udb\Domain\Util\ObjectParamsTrait;
 
 
 class LdapStorage implements StorageInterface
 {
+    
+    use ObjectParamsTrait;
 
     const CONTROL_PROXY_AUTH = '2.16.840.1.113730.3.4.18';
+
+    /**
+     * @var Parameters
+     */
+    protected $params;
 
     /**
      * @var Ldap
@@ -20,9 +29,11 @@ class LdapStorage implements StorageInterface
      * Constructor.
      * 
      * @param Ldap $ldapClient
+     * @param Parameters $params
      */
-    public function __construct(Ldap $ldapClient)
+    public function __construct(Ldap $ldapClient, Parameters $params)
     {
+        $this->setParams($params);
         $this->setLdapClient($ldapClient);
     }
 

@@ -2,6 +2,7 @@
 
 namespace UdbTest\Domain\Storage;
 
+use Zend\Stdlib\Parameters;
 use Zend\Config\Config;
 use Zend\Ldap\Ldap;
 use Udb\Domain\User\Storage\LdapStorage;
@@ -20,7 +21,9 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
         $this->config = new Config(require CONFIG_FILE);
         
         $ldapClient = new Ldap($this->config->get('ldap_client'));
-        $this->storage = new LdapStorage($ldapClient);
+        $params = new Parameters($this->config->get('ldap_storage')->toArray());
+        
+        $this->storage = new LdapStorage($ldapClient, $params);
     }
 
 

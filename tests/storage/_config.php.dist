@@ -1,6 +1,9 @@
 <?php
 
 return array(
+    'ldap_storage' => array(
+        'people_search_base_dn' => 'ou=people,o=example.org'
+    ),
     
     'ldap_client' => array(
         'host' => 'ldap.example.org',
