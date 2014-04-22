@@ -2,6 +2,8 @@
 
 namespace Udb\Domain\User\Storage;
 
+use Udb\Domain\User\Filter\FilterInterface;
+
 
 interface StorageInterface
 {
@@ -13,5 +15,5 @@ interface StorageInterface
     public function updateUserRecord($uid, array $data);
 
 
-    public function fetchUserRecords(array $filters = array());
+    public function fetchUserRecords(FilterInterface $filter = null);
 }

@@ -2,6 +2,7 @@
 
 namespace Udb\Domain\User\Storage;
 
+use Udb\Domain\User\Filter\FilterInterface;
 use Zend\Stdlib\Parameters;
 use Zend\Ldap\Ldap;
 use Udb\Domain\Util\ObjectParamsTrait;
@@ -81,8 +82,12 @@ class LdapStorage implements StorageInterface
     }
 
 
-    public function fetchUserRecords(array $filters = array())
-    {}
+    public function fetchUserRecords(FilterInterface $filter = null)
+    {
+        // convert FilterInterface to LDAP filter
+        // ldap search
+        // return records
+    }
 
 
     /**

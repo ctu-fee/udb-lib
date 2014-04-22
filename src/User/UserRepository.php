@@ -2,6 +2,7 @@
 
 namespace Udb\Domain\User;
 
+use Udb\Domain\User\Filter\FilterInterface;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 use Udb\Domain\User\Storage\StorageInterface;
 
@@ -103,15 +104,38 @@ class UserRepository
     }
 
 
+    /**
+     * Fetches the user with the provided UID.
+     * 
+     * @param string $uid
+     * @return User
+     */
     public function fetchUserByUid($uid)
     {
         $userData = $this->getStorage()->fetchUserRecord($uid);
+        
+        return $this->createUser($userData);
+    }
+
+
+    public function fetchUsers(FilterInterface $filter)
+    {
+        $usersData = $this->getStorage()->fetchUserRecords($filter);
+        
+        $users = new UserCollection();
+        foreach ($usersData as $userData) {
+            $users->append($this->createUser($userData));
+        }
+        
+        return $users;
+    }
+
+
+    protected function createUser(array $userData = array())
+    {
         $user = $this->getFactory()->createUser();
         $user = $this->getHydrator()->hydrate($userData, $user);
         
         return $user;
     }
-    
-    
-    
 }

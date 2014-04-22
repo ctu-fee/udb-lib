@@ -65,6 +65,56 @@ class UserRepositoryTest extends \PHPUnit_Framework_TestCase
         
         $this->assertSame($hydratedUser, $repository->fetchUserByUid($uid));
     }
+
+
+    public function testFetchUsers()
+    {
+        $filter = $this->getMock('Udb\Domain\User\Filter\FilterInterface');
+        $usersData = array(
+            array(
+                'id' => 'user1'
+            ),
+            array(
+                'id' => 'user2'
+            )
+        );
+        $users = array(
+            $this->createUserMock(),
+            $this->createUserMock()
+        );
+        $hydratedUsers = array(
+            $this->createUserMock(),
+            $this->createUserMock()
+        );
+        
+        $usersCount = count($users);
+        
+        $storage = $this->createStorageMock();
+        $storage->expects($this->once())
+            ->method('fetchUserRecords')
+            ->with($filter)
+            ->will($this->returnValue($usersData));
+        
+        $factory = $this->createFactoryMock();
+        for ($i = 0; $i < $usersCount; $i ++) {
+            $factory->expects($this->at($i))
+                ->method('createUser')
+                ->will($this->returnValue($users[$i]));
+        }
+        
+        $hydrator = $this->createHydratorMock();
+        for ($i = 0; $i < $usersCount; $i ++) {
+            $hydrator->expects($this->at($i))
+                ->method('hydrate')
+                ->with($usersData[$i], $users[$i])
+                ->will($this->returnValue($hydratedUsers[$i]));
+        }
+        
+        $repository = new UserRepository($storage, $hydrator, $factory);
+        
+        $this->assertSame($hydratedUsers, $repository->fetchUsers($filter)
+            ->toArray());
+    }
     
     /*
      * 
