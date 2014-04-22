@@ -66,6 +66,23 @@ class UserTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testSetIdWithString()
+    {
+        $user = new User();
+        $user->setId('123');
+        $this->assertSame(123, $user->getId());
+    }
+
+
+    public function testSetIdWithNonScalarValue()
+    {
+        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'The ID should be a scalar value (integer)');
+        
+        $user = new User();
+        $user->setId(array());
+    }
+
+
     public function testGetWorkPhonesWithImplicitValue()
     {
         $user = new User();
@@ -94,6 +111,15 @@ class UserTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testSetWorkPhonesWithInvalidValue()
+    {
+        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting PhoneCollection or array');
+        
+        $user = new User();
+        $user->setWorkPhones('invalid');
+    }
+
+
     public function testGetMobilePhonesWithImplicitValue()
     {
         $user = new User();
@@ -116,6 +142,15 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $phonesCollection = $user->getMobilePhones();
         $this->assertInstanceOf('Udb\Domain\Entity\Collection\PhoneCollection', $phonesCollection);
         $this->assertSame($phones, $phonesCollection->toPlainArray());
+    }
+
+
+    public function testSetMobilePhonesWithInvalidValue()
+    {
+        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting PhoneCollection or array');
+        
+        $user = new User();
+        $user->setMobilePhones('invalid');
     }
 
 
@@ -153,6 +188,15 @@ class UserTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testSetEmailForwardingsWithInvalidValue()
+    {
+        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting EmailAddressCollection or array');
+        
+        $user = new User();
+        $user->setEmailForwardings('invalid');
+    }
+
+
     public function testGetEmailAlternativesWithImplicitValue()
     {
         $user = new User();
@@ -178,6 +222,15 @@ class UserTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testSetEmailAlternativesWithInvalidValue()
+    {
+        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting EmailAddressCollection or array');
+        
+        $user = new User();
+        $user->setEmailAlternatives('invalid');
+    }
+
+
     public function testGetRoomsWithImplicitValue()
     {
         $user = new User();
@@ -200,5 +253,14 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $roomsCollection = $user->getRooms();
         $this->assertInstanceOf('Udb\Domain\Entity\Collection\RoomCollection', $roomsCollection);
         $this->assertSame($rooms, $roomsCollection->toPlainArray());
+    }
+
+
+    public function testSetRoomsWithInvalidValue()
+    {
+        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting RoomCollection or array');
+        
+        $user = new User();
+        $user->setRooms('invalid');
     }
 }

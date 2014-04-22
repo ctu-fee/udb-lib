@@ -20,6 +20,52 @@ class UserHydratorTest extends \PHPUnit_Framework_TestCase
         
         $this->assertSame('testuser', $user->getUsername());
         $this->assertSame(111222, $user->getId());
+        $this->assertSame('Test', $user->getFirstName());
+        $this->assertSame('User', $user->getLastName());
+        $this->assertSame('Ing. Test User', $user->getFullName());
+        $this->assertSame('testuser@example.org', $user->getEmail());
+        $this->assertSame('Technickohospodářský pracovník', $user->getEmployeeType());
+        $this->assertSame('active', $user->getStatus());
+        $this->assertSame('13373', $user->getDepartment());
+        
+        $this->assertSame(array(
+            0 => '+420-22435-2222',
+            1 => '+420-22222-3333'
+        ), $user->getWorkPhones()
+            ->toPlainArray());
+        
+        $this->assertSame(array(
+            0 => '+420777888999'
+        ), $user->getMobilePhones()
+            ->toPlainArray());
+        
+        $this->assertSame(array(
+            0 => 'Praha 6, Nostreet 2, C3-339'
+        ), $user->getRooms()
+            ->toPlainArray());
+        
+        $urls = $user->getUrls();
+        $this->assertInstanceOf('Udb\Domain\Entity\Collection\LabelledUrlCollection', $urls);
+        $this->assertSame('http://www.example.org', $urls->get(0)
+            ->getUrl());
+        $this->assertSame('http://github.com/testuser', $urls->get(1)
+            ->getUrl());
+        $this->assertSame('Example Homepage', $urls->get(0)
+            ->getLabel());
+        $this->assertSame('Github', $urls->get(1)
+            ->getLabel());
+        
+        $this->assertSame(array(
+            0 => 'testuser@imap',
+            1 => 'testuser@gmail.com'
+        ), $user->getEmailForwardings()
+            ->toPlainArray());
+        
+        $this->assertSame(array(
+            0 => 'test.user@example.org',
+            1 => 'user.test@example.org'
+        ), $user->getEmailAlternatives()
+            ->toPlainArray());
     }
 
 
@@ -28,13 +74,13 @@ class UserHydratorTest extends \PHPUnit_Framework_TestCase
         return array(
             'dn' => 'uid=testuser,ou=People,o=example.org',
             'cn' => array(
-                0 => 'Ing. Ivan Novakov'
+                0 => 'Ing. Test User'
             ),
             'cn;lang-cs' => array(
-                0 => 'Ing. Ivan Novakov'
+                0 => 'Ing. Test User'
             ),
             'cn;lang-en' => array(
-                0 => 'Ing. Ivan Novakov'
+                0 => 'Ing. Test User'
             ),
             'cvutuid' => array(
                 0 => 'testuser'
@@ -51,7 +97,7 @@ class UserHydratorTest extends \PHPUnit_Framework_TestCase
                 0 => 'staff'
             ),
             'edupersonprincipalname' => array(
-                0 => 'novakoi@fel.cvut.cz'
+                0 => 'testuser@example.org'
             ),
             'employeenumber' => array(
                 0 => '111222'
