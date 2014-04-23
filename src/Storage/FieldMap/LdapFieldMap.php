@@ -1,6 +1,6 @@
 <?php
 
-namespace Udb\Domain\User\Storage\FieldMap;
+namespace Udb\Domain\Storage\FieldMap;
 
 
 class LdapFieldMap implements FieldMapInterface

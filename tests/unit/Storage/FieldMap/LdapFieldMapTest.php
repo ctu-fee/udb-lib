@@ -1,8 +1,8 @@
 <?php
 
-namespace UdbTest\Domain\User\Storage\FieldMap;
+namespace UdbTest\Domain\Storage\FieldMap;
 
-use Udb\Domain\User\Storage\FieldMap\LdapFieldMap;
+use Udb\Domain\Storage\FieldMap\LdapFieldMap;
 
 
 class LdapFieldMapTest extends \PHPUnit_Framework_TestCase

@@ -1,8 +1,8 @@
 <?php
 
-namespace Udb\Domain\User\Storage\FilterConvertor;
+namespace Udb\Domain\Storage\FilterConvertor;
 
-use Udb\Domain\User\Filter\FilterInterface;
+use Udb\Domain\Repository\Filter\FilterInterface;
 
 
 interface FilterConvertorInterface

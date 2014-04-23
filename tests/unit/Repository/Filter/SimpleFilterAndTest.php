@@ -1,8 +1,8 @@
 <?php
 
-namespace UdbTest\Domain\User\Filter;
+namespace UdbTest\Domain\Repository\Filter;
 
-use Udb\Domain\User\Filter\SimpleFilterAnd;
+use Udb\Domain\Repository\Filter\SimpleFilterAnd;
 
 
 class SimpleFilterAndTest extends \PHPUnit_Framework_TestCase

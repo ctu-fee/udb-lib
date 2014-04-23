@@ -1,6 +1,6 @@
 <?php
 
-namespace Udb\Domain\User\Filter;
+namespace Udb\Domain\Repository\Filter;
 
 
 interface FilterInterface

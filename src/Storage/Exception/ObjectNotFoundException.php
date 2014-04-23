@@ -1,6 +1,6 @@
 <?php
 
-namespace Udb\Domain\User\Storage\Exception;
+namespace Udb\Domain\Storage\Exception;
 
 
 class ObjectNotFoundException extends \RuntimeException

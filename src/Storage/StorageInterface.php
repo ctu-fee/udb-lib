@@ -1,8 +1,8 @@
 <?php
 
-namespace Udb\Domain\User\Storage;
+namespace Udb\Domain\Storage;
 
-use Udb\Domain\User\Filter\FilterInterface;
+use Udb\Domain\Repository\Filter\FilterInterface;
 
 
 interface StorageInterface

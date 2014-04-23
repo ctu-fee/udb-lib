@@ -2,11 +2,11 @@
 
 namespace UdbTest\Domain\Storage;
 
-use Udb\Domain\User\Filter\SimpleFilterAnd;
 use Zend\Stdlib\Parameters;
 use Zend\Config\Config;
 use Zend\Ldap\Ldap;
-use Udb\Domain\User\Storage\LdapStorage;
+use Udb\Domain\Repository\Filter\SimpleFilterAnd;
+use Udb\Domain\Storage\LdapStorage;
 
 
 class LdapStorageTest extends \PHPUnit_Framework_TestCase
@@ -62,7 +62,7 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testGetUserDnByUidWithNonexistentUid()
     {
-        $this->setExpectedException('Udb\Domain\User\Storage\Exception\GeneralException', 'Error getting user DN');
+        $this->setExpectedException('Udb\Domain\Storage\Exception\GeneralException', 'Error getting user DN');
         
         $this->storage->getUserDnByUid('somenonexistentuid');
     }

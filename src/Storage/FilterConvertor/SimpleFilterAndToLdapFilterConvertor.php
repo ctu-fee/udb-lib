@@ -1,11 +1,11 @@
 <?php
 
-namespace Udb\Domain\User\Storage\FilterConvertor;
+namespace Udb\Domain\Storage\FilterConvertor;
 
 use Zend\Ldap;
-use Udb\Domain\User\Storage\FieldMap\LdapFieldMap;
-use Udb\Domain\User\Storage\FieldMap\FieldMapInterface;
-use Udb\Domain\User\Filter\FilterInterface;
+use Udb\Domain\Storage\FieldMap\LdapFieldMap;
+use Udb\Domain\Storage\FieldMap\FieldMapInterface;
+use Udb\Domain\Repository\Filter\FilterInterface;
 
 
 /**

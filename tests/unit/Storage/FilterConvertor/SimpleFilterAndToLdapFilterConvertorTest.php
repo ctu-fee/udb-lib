@@ -2,9 +2,9 @@
 
 namespace UdbTest\Domain\Storage\FilterConvertor;
 
-use Udb\Domain\User\Storage\FieldMap\LdapFieldMap;
-use Udb\Domain\User\Filter\SimpleFilterAnd;
-use Udb\Domain\User\Storage\FilterConvertor\SimpleFilterAndToLdapFilterConvertor;
+use Udb\Domain\Repository\Filter\SimpleFilterAnd;
+use Udb\Domain\Storage\FieldMap\LdapFieldMap;
+use Udb\Domain\Storage\FilterConvertor\SimpleFilterAndToLdapFilterConvertor;
 
 
 class SimpleFilterAndToLdapFilterConvertorTest extends \PHPUnit_Framework_TestCase
@@ -21,13 +21,13 @@ class SimpleFilterAndToLdapFilterConvertorTest extends \PHPUnit_Framework_TestCa
 
     public function testGetImplicitFieldMap()
     {
-        $this->assertInstanceOf('Udb\Domain\User\Storage\FieldMap\FieldMapInterface', $this->convertor->getFieldMap());
+        $this->assertInstanceOf('Udb\Domain\Storage\FieldMap\FieldMapInterface', $this->convertor->getFieldMap());
     }
 
 
     public function testSetGetFieldMap()
     {
-        $fieldMap = $this->getMock('Udb\Domain\User\Storage\FieldMap\FieldMapInterface');
+        $fieldMap = $this->getMock('Udb\Domain\Storage\FieldMap\FieldMapInterface');
         $this->convertor->setFieldMap($fieldMap);
         
         $this->assertSame($fieldMap, $this->convertor->getFieldMap());
@@ -36,7 +36,7 @@ class SimpleFilterAndToLdapFilterConvertorTest extends \PHPUnit_Framework_TestCa
 
     public function testConvertWithUnknownField()
     {
-        $this->setExpectedException('Udb\Domain\User\Storage\FilterConvertor\Exception\UnknownFieldException', 'Unknown field');
+        $this->setExpectedException('Udb\Domain\Storage\FilterConvertor\Exception\UnknownFieldException', 'Unknown field');
         
         $this->convertor->convert(new SimpleFilterAnd(array(
             'unknown_filter' => 'foo'

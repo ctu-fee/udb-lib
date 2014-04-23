@@ -1,6 +1,6 @@
 <?php
 
-namespace Udb\Domain\User\Storage\FilterConvertor\Exception;
+namespace Udb\Domain\Storage\FilterConvertor\Exception;
 
 
 class UnknownFieldException extends \RuntimeException

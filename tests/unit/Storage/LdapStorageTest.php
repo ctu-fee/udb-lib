@@ -1,9 +1,9 @@
 <?php
 
-namespace UdbTest\Domain\User\Storage;
+namespace UdbTest\Domain\Storage;
 
-use Udb\Domain\User\Storage\LdapStorage;
 use Zend\Stdlib\Parameters;
+use Udb\Domain\Storage\LdapStorage;
 
 
 class LdapStorageTest extends \PHPUnit_Framework_TestCase
@@ -35,7 +35,7 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testSetFilterConvertor()
     {
-        $filterConvertor = $this->getMock('Udb\Domain\User\Storage\FilterConvertor\FilterConvertorInterface');
+        $filterConvertor = $this->getMock('Udb\Domain\Storage\FilterConvertor\FilterConvertorInterface');
         $this->storage->setFilterConvertor($filterConvertor);
         
         $this->assertSame($filterConvertor, $this->storage->getFilterConvertor());
@@ -46,6 +46,6 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
     {
         $filterConvertor = $this->storage->getFilterConvertor();
         
-        $this->assertInstanceOf('Udb\Domain\User\Storage\FilterConvertor\FilterConvertorInterface', $filterConvertor);
+        $this->assertInstanceOf('Udb\Domain\Storage\FilterConvertor\FilterConvertorInterface', $filterConvertor);
     }
 }

@@ -69,7 +69,7 @@ class UserRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testFetchUsers()
     {
-        $filter = $this->getMock('Udb\Domain\User\Filter\FilterInterface');
+        $filter = $this->getMock('Udb\Domain\Repository\Filter\FilterInterface');
         $usersData = array(
             array(
                 'id' => 'user1'
@@ -125,7 +125,7 @@ class UserRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     protected function createStorageMock()
     {
-        $storage = $this->getMock('Udb\Domain\User\Storage\StorageInterface');
+        $storage = $this->getMock('Udb\Domain\Storage\StorageInterface');
         
         return $storage;
     }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Udb\Domain\User\Storage;
+namespace Udb\Domain\Storage;
 
 use Zend\Stdlib\Parameters;
 use Zend\Ldap\Ldap;
-use Udb\Domain\User\Storage\FilterConvertor\SimpleFilterAndToLdapFilterConvertor;
-use Udb\Domain\User\Storage\FilterConvertor\FilterConvertorInterface;
-use Udb\Domain\User\Filter\FilterInterface;
+use Udb\Domain\Storage\FilterConvertor\SimpleFilterAndToLdapFilterConvertor;
+use Udb\Domain\Storage\FilterConvertor\FilterConvertorInterface;
+use Udb\Domain\Repository\Filter\FilterInterface;
 use Udb\Domain\Util\ObjectParamsTrait;
 
 
