@@ -2,6 +2,7 @@
 
 namespace UdbTest\Domain\Storage;
 
+use Udb\Domain\User\Filter\SimpleFilterAnd;
 use Zend\Stdlib\Parameters;
 use Zend\Config\Config;
 use Zend\Ldap\Ldap;
@@ -136,5 +137,41 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
          */
         $originalUserData = $this->storage->fetchUserRecord($uid);
         $this->assertSame($backupValue, $originalUserData[$attr]);
+    }
+
+
+    public function testFetchUserRecords()
+    {
+        $uid = $this->config->tests->get('testuid');
+        $this->storage->setProxyUserByUid($uid);
+        
+        $filter = new SimpleFilterAnd(array(
+            'username' => 'novako*'
+        ));
+        
+        $records = $this->storage->fetchUserRecords($filter);
+        
+        $this->assertInstanceOf('Zend\Ldap\Collection', $records);
+        
+        foreach ($records as $record) {
+            $this->assertTrue(isset($record['uid'][0]));
+        }
+    }
+
+
+    public function testFetchUserRecordsWithSizeLimit()
+    {
+        $uid = $this->config->tests->get('testuid');
+        $this->storage->setProxyUserByUid($uid);
+        
+        $countLimit = 5;
+        $this->storage->setParam(LdapStorage::PARAM_USER_SEARCH_SIZE_LIMIT, $countLimit);
+        
+        $filter = new SimpleFilterAnd(array(
+            'username' => '*'
+        ));
+        
+        $records = $this->storage->fetchUserRecords($filter);
+        $this->assertCount($countLimit, $records);
     }
 }

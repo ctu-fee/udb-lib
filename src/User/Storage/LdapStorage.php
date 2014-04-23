@@ -2,6 +2,8 @@
 
 namespace Udb\Domain\User\Storage;
 
+use Udb\Domain\User\Storage\FilterConvertor\SimpleFilterAndToLdapFilterConvertor;
+use Udb\Domain\User\Storage\FilterConvertor\FilterConvertorInterface;
 use Udb\Domain\User\Filter\FilterInterface;
 use Zend\Stdlib\Parameters;
 use Zend\Ldap\Ldap;
@@ -15,15 +17,19 @@ class LdapStorage implements StorageInterface
 
     const CONTROL_PROXY_AUTH = '2.16.840.1.113730.3.4.18';
 
-    /**
-     * @var Parameters
-     */
-    protected $params;
+    const PARAM_USER_SEARCH_BASE_DN = 'user_search_base_dn';
+
+    const PARAM_USER_SEARCH_SIZE_LIMIT = 'user_search_size_limit';
 
     /**
      * @var Ldap
      */
     protected $ldapClient;
+
+    /**
+     * @var FilterConvertorInterface
+     */
+    protected $filterConvertor;
 
 
     /**
@@ -58,6 +64,28 @@ class LdapStorage implements StorageInterface
 
 
     /**
+     * @return FilterConvertorInterface
+     */
+    public function getFilterConvertor()
+    {
+        if (! $this->filterConvertor instanceof FilterConvertorInterface) {
+            $this->filterConvertor = new SimpleFilterAndToLdapFilterConvertor();
+        }
+        
+        return $this->filterConvertor;
+    }
+
+
+    /**
+     * @param FilterConvertorInterface $filterConvertor
+     */
+    public function setFilterConvertor(FilterConvertorInterface $filterConvertor)
+    {
+        $this->filterConvertor = $filterConvertor;
+    }
+
+
+    /**
      * {@inhertidoc}
      * @see \Udb\Domain\User\Storage\StorageInterface::fetchUserRecord()
      */
@@ -82,11 +110,22 @@ class LdapStorage implements StorageInterface
     }
 
 
+    /**
+     * {@inhertidoc}
+     * @see \Udb\Domain\User\Storage\StorageInterface::fetchUserRecords()
+     */
     public function fetchUserRecords(FilterInterface $filter = null)
     {
-        // convert FilterInterface to LDAP filter
-        // ldap search
-        // return records
+        $ldapFilter = $this->getFilterConvertor()->convert($filter);
+        
+        $records = $this->getLdapClient()->search(array(
+            'filter' => $ldapFilter,
+            'baseDn' => $this->getParam(self::PARAM_USER_SEARCH_BASE_DN),
+            'scope' => Ldap::SEARCH_SCOPE_SUB,
+            'sizelimit' => $this->getParam(self::PARAM_USER_SEARCH_SIZE_LIMIT, 100)
+        ));
+        
+        return $records;
     }
 
 
