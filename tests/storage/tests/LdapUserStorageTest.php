@@ -9,7 +9,7 @@ use Udb\Domain\Repository\Filter\SimpleFilterAnd;
 use Udb\Domain\Storage\LdapStorage;
 
 
-class LdapStorageTest extends \PHPUnit_Framework_TestCase
+class LdapUserStorageTest extends \PHPUnit_Framework_TestCase
 {
 
     protected $config;
