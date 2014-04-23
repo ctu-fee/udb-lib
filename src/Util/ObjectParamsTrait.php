@@ -47,6 +47,23 @@ trait ObjectParamsTrait
 
 
     /**
+     * Tries to return the required parameter and throws an exception if the parameter has not been set.
+     * 
+     * @param string $name
+     * @return mixed
+     */
+    public function getRequiredParam($name)
+    {
+        $value = $this->getParam($name);
+        if (null === $value) {
+            throw new Exception\MissingParamException(sprintf("Missing required parameter '%s'", $name));
+        }
+        
+        return $value;
+    }
+
+
+    /**
      * @param string $name
      * @param string $value
      * @return Parameters
