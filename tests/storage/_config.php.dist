@@ -2,7 +2,8 @@
 
 return array(
     'ldap_storage' => array(
-        'people_search_base_dn' => 'ou=people,o=example.org'
+        'user_search_base_dn' => 'ou=people,o=example.org',
+        'user_search_size_limit' => 20
     ),
     
     'ldap_client' => array(

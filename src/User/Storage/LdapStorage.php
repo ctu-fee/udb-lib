@@ -2,11 +2,11 @@
 
 namespace Udb\Domain\User\Storage;
 
+use Zend\Stdlib\Parameters;
+use Zend\Ldap\Ldap;
 use Udb\Domain\User\Storage\FilterConvertor\SimpleFilterAndToLdapFilterConvertor;
 use Udb\Domain\User\Storage\FilterConvertor\FilterConvertorInterface;
 use Udb\Domain\User\Filter\FilterInterface;
-use Zend\Stdlib\Parameters;
-use Zend\Ldap\Ldap;
 use Udb\Domain\Util\ObjectParamsTrait;
 
 
