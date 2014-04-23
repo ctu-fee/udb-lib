@@ -17,9 +17,15 @@ class LdapStorage implements StorageInterface
 
     const CONTROL_PROXY_AUTH = '2.16.840.1.113730.3.4.18';
 
-    const PARAM_USER_SEARCH_BASE_DN = 'user_search_base_dn';
+    const PARAM_USER_BASE_DN = 'user_base_dn';
 
     const PARAM_USER_SEARCH_SIZE_LIMIT = 'user_search_size_limit';
+
+    const PARAM_GROUP_BASE_DN = 'group_base_dn';
+
+    const PARAM_GROUP_SEARCH_SIZE_LIMIT = 'group_search_size_limit';
+
+    const PARAM_GROUP_OBJECT_CLASSES = 'group_object_classes';
 
     /**
      * @var Ldap
@@ -87,6 +93,26 @@ class LdapStorage implements StorageInterface
 
     /**
      * {@inhertidoc}
+     * @see \Udb\Domain\Storage\StorageInterface::supportsProxyAuthentication()
+     */
+    public function supportsProxyAuthentication()
+    {
+        return (in_array(self::CONTROL_PROXY_AUTH, $this->getSupportedControls()));
+    }
+
+
+    /**
+     * {@inhertidoc}
+     * @see \Udb\Domain\Storage\StorageInterface::setProxyUserByUid()
+     */
+    public function setProxyUserByUid($uid)
+    {
+        return $this->setProxyUserByDn($this->getUserDnByUid($uid));
+    }
+
+
+    /**
+     * {@inhertidoc}
      * @see \Udb\Domain\User\Storage\StorageInterface::fetchUserRecord()
      */
     public function fetchUserRecord($uid)
@@ -120,7 +146,7 @@ class LdapStorage implements StorageInterface
         
         $records = $this->getLdapClient()->search(array(
             'filter' => $ldapFilter,
-            'baseDn' => $this->getParam(self::PARAM_USER_SEARCH_BASE_DN),
+            'baseDn' => $this->getRequiredParam(self::PARAM_USER_BASE_DN),
             'scope' => Ldap::SEARCH_SCOPE_SUB,
             'sizelimit' => $this->getParam(self::PARAM_USER_SEARCH_SIZE_LIMIT, 100)
         ));
@@ -129,20 +155,59 @@ class LdapStorage implements StorageInterface
     }
 
 
-    /**
-     * Returns true, if the storage supports proxy authentication.
-     * 
-     * @return boolean
-     */
-    public function supportsProxyAuthentication()
+    public function fetchGroupRecord($groupName)
     {
-        return (in_array(self::CONTROL_PROXY_AUTH, $this->getSupportedControls()));
+        $groupDn = $this->getGroupDnByName($groupName);
+        $groupNode = $this->getNode($groupDn);
+        
+        return $groupNode->toArray();
     }
+
+
+    public function fetchGroupRecords(FilterInterface $filter = null)
+    {
+        $ldapFilter = $this->getFilterConvertor()->convert($filter);
+        
+        $records = $this->getLdapClient()->search(array(
+            'filter' => $ldapFilter,
+            'baseDn' => $this->getRequiredParam(self::PARAM_GROUP_BASE_DN),
+            'scope' => Ldap::SEARCH_SCOPE_SUB,
+            'sizelimit' => $this->getParam(self::PARAM_GROUP_SEARCH_SIZE_LIMIT, 100)
+        ));
+    }
+
+
+    public function addGroupMember($groupName, $uid)
+    {}
+
+
+    public function removeGroupMember($groupName, $uid)
+    {}
+
+
+    public function addGroupOwner($groupName, $uid)
+    {}
+
+
+    public function removeGroupOwner($groupName, $uid)
+    {}
+
+
+    public function addGroup($groupName, array $data)
+    {}
+
+
+    public function removeGroup($gorupName)
+    {}
+
+
+    public function setGroupAttribute($name, $value)
+    {}
 
 
     /**
      * Returns of OID values indicating the supported controls of the storage.
-     * 
+     *
      * @return array
      */
     public function getSupportedControls()
@@ -178,15 +243,11 @@ class LdapStorage implements StorageInterface
     }
 
 
-    /**
-     * Sets a proxy user authorization by UID.
-     * 
-     * @param string $uid
-     * @return boolean
-     */
-    public function setProxyUserByUid($uid)
+    public function getGroupDnByName($groupName, $nameAttribute = 'cn')
     {
-        return $this->setProxyUserByDn($this->getUserDnByUid($uid));
+        $groupBaseDn = $this->getRequiredParam(self::PARAM_GROUP_BASE_DN);
+        
+        return sprintf("%s=%s,%s", $nameAttribute, $groupName, $groupBaseDn);
     }
 
 
@@ -220,18 +281,29 @@ class LdapStorage implements StorageInterface
      * Searches for the corresponding user node by uid and returns it.
      *
      * @param string $uid
-     * @throws Exception\ObjectNotFoundException
      * @return \Zend\Ldap\Node|null
      */
     public function getUserNodeByUid($uid)
     {
-        $ldap = $this->getLdapClient();
         $userDn = $this->getUserDnByUid($uid);
         
+        return $this->getNode($userDn);
+    }
+
+
+    /**
+     * Searches for the required DN and returns the corresponding node.
+     *
+     * @param string $dn
+     * @throws Exception\ObjectNotFoundException
+     * @return \Zend\Ldap\Node|null
+     */
+    protected function getNode($dn)
+    {
         try {
-            $node = $ldap->getNode($userDn);
+            $node = $this->getLdapClient()->getNode($dn);
         } catch (\Exception $e) {
-            throw new Exception\ObjectNotFoundException(sprintf("Node with uid=%s (%s) cannot be fetched: [%s] %s", $uid, $userDn, get_class($e), $e->getMessage()), null, $e);
+            throw new Exception\ObjectNotFoundException(sprintf("Node '%s' cannot be fetched: [%s] %s", $dn, get_class($e), $e->getMessage()), null, $e);
         }
         
         return $node;

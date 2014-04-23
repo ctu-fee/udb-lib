@@ -51,4 +51,31 @@ interface StorageInterface
      * @return array
      */
     public function fetchUserRecords(FilterInterface $filter = null);
+
+
+    public function fetchGroupRecord($groupName);
+
+
+    public function fetchGroupRecords(FilterInterface $filter = null);
+
+
+    public function addGroupMember($groupName, $uid);
+
+
+    public function removeGroupMember($groupName, $uid);
+
+
+    public function addGroupOwner($groupName, $uid);
+
+
+    public function removeGroupOwner($groupName, $uid);
+
+
+    public function addGroup($groupName, array $data);
+
+
+    public function removeGroup($gorupName);
+
+
+    public function setGroupAttribute($name, $value);
 }

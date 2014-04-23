@@ -48,4 +48,26 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
         
         $this->assertInstanceOf('Udb\Domain\Storage\FilterConvertor\FilterConvertorInterface', $filterConvertor);
     }
+
+
+    public function testGetGroupDnByName()
+    {
+        $this->storage->setParam('group_base_dn', 'ou=groups,o=example.org');
+        $this->assertSame('foo=Test Group,ou=groups,o=example.org', $this->storage->getGroupDnByName('Test Group', 'foo'));
+    }
+
+
+    public function testGetGroupDnByNameWithImplicitAttrName()
+    {
+        $this->storage->setParam('group_base_dn', 'ou=groups,o=example.org');
+        $this->assertSame('cn=Test Group,ou=groups,o=example.org', $this->storage->getGroupDnByName('Test Group'));
+    }
+
+
+    public function testGetGroupDnByNameWithMissingBaseDn()
+    {
+        $this->setExpectedException('Udb\Domain\Util\Exception\MissingParamException', 'Missing parameter');
+        
+        $this->storage->getGroupDnByName('Test Group');
+    }
 }
