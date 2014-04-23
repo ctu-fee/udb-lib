@@ -19,6 +19,10 @@ trait ObjectParamsTrait
      */
     public function getParams()
     {
+        if (! $this->params instanceof Parameters) {
+            $this->params = new Parameters();
+        }
+        
         return $this->params;
     }
 
@@ -39,5 +43,17 @@ trait ObjectParamsTrait
     public function getParam($name, $defaultValue = null)
     {
         return $this->getParams()->get($name, $defaultValue);
+    }
+
+
+    /**
+     * @param string $name
+     * @param string $value
+     * @return Parameters
+     */
+    public function setParam($name, $value)
+    {
+        $this->getParams()->set($name, $value);
+        return $this;
     }
 }
