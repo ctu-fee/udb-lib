@@ -4,6 +4,7 @@ namespace Udb\Domain\Storage;
 
 use Zend\Stdlib\Parameters;
 use Zend\Ldap\Ldap;
+use Zend\Ldap\Attribute;
 use Udb\Domain\Storage\FilterConvertor\SimpleFilterAndToLdapFilterConvertor;
 use Udb\Domain\Storage\FilterConvertor\FilterConvertorInterface;
 use Udb\Domain\Repository\Filter\FilterInterface;
@@ -206,12 +207,27 @@ class LdapStorage implements StorageInterface
     {}
 
 
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\StorageInterface::addGroup()
+     */
     public function addGroup($groupName, array $data)
-    {}
+    {
+        $groupEntry = $this->createGroupEntry($groupName, $data);
+        $groupDn = $this->getGroupDnByName($groupName);
+        
+        $this->getLdapClient()->add($groupDn, $groupEntry);
+    }
 
 
-    public function removeGroup($gorupName)
-    {}
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\StorageInterface::removeGroup()
+     */
+    public function removeGroup($groupName)
+    {
+        $this->getLdapClient()->delete($this->getGroupDnByName($groupName));
+    }
 
 
     public function setGroupAttribute($name, $value)
@@ -320,5 +336,16 @@ class LdapStorage implements StorageInterface
         }
         
         return $node;
+    }
+
+
+    protected function createGroupEntry($groupName, array $data = array())
+    {
+        $groupEntry = array();
+        Attribute::setAttribute($groupEntry, 'cn', $groupName);
+        Attribute::setAttribute($groupEntry, 'objectClass', 'top');
+        Attribute::setAttribute($groupEntry, 'objectClass', 'groupOfUniqueNames');
+        
+        return $groupEntry;
     }
 }

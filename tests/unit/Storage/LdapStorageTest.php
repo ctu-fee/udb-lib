@@ -99,6 +99,69 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
         
         $this->assertSame($records, $this->storage->fetchGroupRecords($filter));
     }
+
+
+    public function testAddGroup()
+    {
+        $groupName = 'Foo Group';
+        $data = array(
+            'foo' => 'bar'
+        );
+        $groupEntry = array(
+            'cn' => 'Foo Group'
+        );
+        $groupDn = 'cn=Foo Group,o=example.org';
+        
+        $storage = $this->getMockBuilder('Udb\Domain\Storage\LdapStorage')
+            ->disableOriginalConstructor()
+            ->setMethods(array(
+            'createGroupEntry',
+            'getGroupDnByName'
+        ))
+            ->getMock();
+        $storage->expects($this->once())
+            ->method('createGroupEntry')
+            ->with($groupName, $data)
+            ->will($this->returnValue($groupEntry));
+        $storage->expects($this->once())
+            ->method('getGroupDnByName')
+            ->with($groupName)
+            ->will($this->returnValue($groupDn));
+        
+        $ldapClient = $this->createLdapClientMock();
+        $ldapClient->expects($this->once())
+            ->method('add')
+            ->with($groupDn, $groupEntry);
+        $storage->setLdapClient($ldapClient);
+        
+        $storage->addGroup($groupName, $data);
+    }
+
+
+    public function testRemoveGroup()
+    {
+        $groupName = 'Foo Group';
+        $groupDn = 'cn=Foo Group,o=example.org';
+        
+        $storage = $this->getMockBuilder('Udb\Domain\Storage\LdapStorage')
+            ->disableOriginalConstructor()
+            ->setMethods(array(
+            'getGroupDnByName'
+        ))
+            ->getMock();
+        $storage->expects($this->once())
+            ->method('getGroupDnByName')
+            ->with($groupName)
+            ->will($this->returnValue($groupDn));
+        
+        $ldapClient = $this->createLdapClientMock();
+        $ldapClient->expects($this->once())
+            ->method('delete')
+            ->with($groupDn);
+        $storage->setLdapClient($ldapClient);
+        
+        $storage->removeGroup($groupName);
+    }
     
     /*
      * 

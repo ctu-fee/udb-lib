@@ -74,7 +74,7 @@ interface StorageInterface
     public function addGroup($groupName, array $data);
 
 
-    public function removeGroup($gorupName);
+    public function removeGroup($groupName);
 
 
     public function setGroupAttribute($name, $value);
