@@ -162,6 +162,60 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
         
         $storage->removeGroup($groupName);
     }
+
+
+    public function testFetchGroupMemberRecords()
+    {
+        $groupName = 'Foo Group';
+        $groupDn = 'cn=Foo Group,o=example.org';
+        $attrName = 'member';
+        $memberDns = array(
+            'uid=foo',
+            'uid=bar'
+        );
+        $memberRecords = array(
+            array(
+                'dn' => 'uid=foo'
+            ),
+            array(
+                'dn' => 'uid=bar'
+            )
+        );
+        
+        $groupNode = $this->createLdapNodeMock();
+        $groupNode->expects($this->once())
+            ->method('getAttribute')
+            ->with($attrName)
+            ->will($this->returnValue($memberDns));
+        
+        $storage = $this->getMockBuilder('Udb\Domain\Storage\LdapStorage')
+            ->disableOriginalConstructor()
+            ->setMethods(array(
+            'getGroupDnByName',
+            'getNode'
+        ))
+            ->getMock();
+        
+        $storage->setParam(LdapStorage::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME, $attrName);
+        
+        $storage->expects($this->once())
+            ->method('getGroupDnByName')
+            ->with($groupName)
+            ->will($this->returnValue($groupDn));
+        $storage->expects($this->at(1))
+            ->method('getNode')
+            ->with($groupDn)
+            ->will($this->returnValue($groupNode));
+        
+        for ($i = 0; $i < 2; $i ++) {
+            $storage->expects($this->at($i + 2))
+                ->method('getNode')
+                ->with($memberDns[$i], true)
+                ->will($this->returnValue($memberRecords[$i]));
+        }
+        
+        $this->assertSame($memberRecords, $storage->fetchGroupMemberRecords($groupName));
+    }
     
     /*
      * 
@@ -197,5 +251,15 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         
         return $col;
+    }
+
+
+    protected function createLdapNodeMock()
+    {
+        $node = $this->getMockBuilder('Zend\Ldap\Node')
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        return $node;
     }
 }

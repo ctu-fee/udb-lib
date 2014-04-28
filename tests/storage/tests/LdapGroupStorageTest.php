@@ -85,4 +85,23 @@ class LdapGroupStorageTest extends \PHPUnit_Framework_TestCase
         
         $this->fail('ObjectNotFoundException has not been thrown');
     }
+
+
+    public function testAddAndRemoveGroupMember()
+    {
+        $uid = $this->config->tests->get('test_admin_uid');
+        $this->storage->setProxyUserByUid($uid);
+        
+        $groupName = $this->config->tests->get('test_group_name');
+        $testUserUid = $this->config->tests->get('testuid');
+        
+        $this->storage->addGroupMember($groupName, $testUserUid);
+        $memberRecords = $this->storage->fetchGroupMemberRecords($groupName);
+        
+        $this->assertSame($testUserUid, $memberRecords[0]['uid'][0]);
+        
+        $this->storage->removeGroupMember($groupName, $testUserUid);
+        
+        $this->assertEmpty($this->storage->fetchGroupMemberRecords($groupName));
+    }
 }

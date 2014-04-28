@@ -53,10 +53,40 @@ interface StorageInterface
     public function fetchUserRecords(FilterInterface $filter = null);
 
 
+    /**
+     * Returns the records of the groups, the user is member of.
+     * 
+     * @param string $uid
+     * @return array
+     */
+    public function fetchUserGroupRecords($uid);
+
+
+    /**
+     * Returns a single group record by group name.
+     * 
+     * @param string $groupName
+     * @return array
+     */
     public function fetchGroupRecord($groupName);
 
 
+    /**
+     * Returns a list of group records complying with the provided filter.
+     * 
+     * @param FilterInterface $filter
+     * @return array
+     */
     public function fetchGroupRecords(FilterInterface $filter = null);
+
+
+    /**
+     * Returns all group members' records.
+     * 
+     * @param string $groupName
+     * @return array
+     */
+    public function fetchGroupMemberRecords($groupName);
 
 
     public function addGroupMember($groupName, $uid);

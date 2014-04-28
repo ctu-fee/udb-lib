@@ -18,6 +18,8 @@ class LdapStorage implements StorageInterface
 
     const CONTROL_PROXY_AUTH = '2.16.840.1.113730.3.4.18';
 
+    const PARAM_GROUP_MEMBER_ATTRIBUTE_NAME = 'group_member_attribute_name';
+
     const PARAM_USER_BASE_DN = 'user_base_dn';
 
     const PARAM_USER_SEARCH_SIZE_LIMIT = 'user_search_size_limit';
@@ -156,6 +158,10 @@ class LdapStorage implements StorageInterface
     }
 
 
+    public function fetchUserGroupRecords($uid)
+    {}
+
+
     /**
      * {@inheritdoc}
      * @see \Udb\Domain\Storage\StorageInterface::fetchGroupRecord()
@@ -163,9 +169,8 @@ class LdapStorage implements StorageInterface
     public function fetchGroupRecord($groupName)
     {
         $groupDn = $this->getGroupDnByName($groupName);
-        $groupNode = $this->getNode($groupDn);
         
-        return $groupNode->toArray();
+        return $this->getNode($groupDn, true);
     }
 
 
@@ -191,12 +196,42 @@ class LdapStorage implements StorageInterface
     }
 
 
+    public function fetchGroupMemberRecords($groupName)
+    {
+        $groupDn = $this->getGroupDnByName($groupName);
+        
+        $node = $this->getNode($groupDn);
+        $memberDns = $node->getAttribute($this->getParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME));
+        
+        $records = array();
+        foreach ($memberDns as $userDn) {
+            $records[] = $this->getNode($userDn, true);
+        }
+        
+        return $records;
+    }
+
+
     public function addGroupMember($groupName, $uid)
-    {}
+    {
+        $userDn = $this->getUserDnByUid($uid);
+        $groupDn = $this->getGroupDnByName($groupName);
+        
+        $node = $this->getNode($groupDn);
+        $node->appendToAttribute($this->getParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
+        $node->update();
+    }
 
 
     public function removeGroupMember($groupName, $uid)
-    {}
+    {
+        $userDn = $this->getUserDnByUid($uid);
+        $groupDn = $this->getGroupDnByName($groupName);
+        
+        $node = $this->getNode($groupDn);
+        $node->removeFromAttribute($this->getParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
+        $node->update();
+    }
 
 
     public function addGroupOwner($groupName, $uid)
@@ -327,12 +362,16 @@ class LdapStorage implements StorageInterface
      * @throws Exception\ObjectNotFoundException
      * @return \Zend\Ldap\Node|null
      */
-    protected function getNode($dn)
+    protected function getNode($dn, $asArray = false)
     {
         try {
             $node = $this->getLdapClient()->getNode($dn);
         } catch (\Exception $e) {
             throw new Exception\ObjectNotFoundException(sprintf("Node '%s' cannot be fetched: [%s] %s", $dn, get_class($e), $e->getMessage()), null, $e);
+        }
+        
+        if ($asArray) {
+            return $node->toArray();
         }
         
         return $node;
