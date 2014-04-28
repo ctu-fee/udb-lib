@@ -101,7 +101,7 @@ interface StorageInterface
     public function removeGroupOwner($groupName, $uid);
 
 
-    public function addGroup($groupName, array $data);
+    public function addGroup($groupName, array $data = array());
 
 
     public function removeGroup($groupName);

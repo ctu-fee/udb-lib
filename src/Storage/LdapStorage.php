@@ -154,12 +154,24 @@ class LdapStorage implements StorageInterface
             'sizelimit' => $this->getParam(self::PARAM_USER_SEARCH_SIZE_LIMIT, 100)
         ));
         
-        return $records;
+        return $records->toArray();
     }
 
 
     public function fetchUserGroupRecords($uid)
-    {}
+    {
+        $userDn = $this->getUserDnByUid($uid);
+        $memberFilter = sprintf("(%s=%s)", $this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
+        
+        $records = $this->getLdapClient()->search(array(
+            'filter' => $memberFilter,
+            'baseDn' => $this->getRequiredParam(self::PARAM_GROUP_BASE_DN),
+            'scope' => Ldap::SEARCH_SCOPE_SUB,
+            'sizelimit' => $this->getParam(self::PARAM_GROUP_SEARCH_SIZE_LIMIT, 100)
+        ));
+        
+        return $records->toArray();
+    }
 
 
     /**
@@ -201,7 +213,7 @@ class LdapStorage implements StorageInterface
         $groupDn = $this->getGroupDnByName($groupName);
         
         $node = $this->getNode($groupDn);
-        $memberDns = $node->getAttribute($this->getParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME));
+        $memberDns = $node->getAttribute($this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME));
         
         $records = array();
         foreach ($memberDns as $userDn) {
@@ -218,7 +230,7 @@ class LdapStorage implements StorageInterface
         $groupDn = $this->getGroupDnByName($groupName);
         
         $node = $this->getNode($groupDn);
-        $node->appendToAttribute($this->getParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
+        $node->appendToAttribute($this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
         $node->update();
     }
 
@@ -229,7 +241,7 @@ class LdapStorage implements StorageInterface
         $groupDn = $this->getGroupDnByName($groupName);
         
         $node = $this->getNode($groupDn);
-        $node->removeFromAttribute($this->getParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
+        $node->removeFromAttribute($this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
         $node->update();
     }
 
@@ -246,7 +258,7 @@ class LdapStorage implements StorageInterface
      * {@inheritdoc}
      * @see \Udb\Domain\Storage\StorageInterface::addGroup()
      */
-    public function addGroup($groupName, array $data)
+    public function addGroup($groupName, array $data = array())
     {
         $groupEntry = $this->createGroupEntry($groupName, $data);
         $groupDn = $this->getGroupDnByName($groupName);

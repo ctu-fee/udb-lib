@@ -104,4 +104,29 @@ class LdapGroupStorageTest extends \PHPUnit_Framework_TestCase
         
         $this->assertEmpty($this->storage->fetchGroupMemberRecords($groupName));
     }
+    
+    
+    public function testFetchUserGroupRecords()
+    {
+        $testUserUid = $this->config->tests->get('testuid');
+        $uid = $this->config->tests->get('test_admin_uid');
+        $this->storage->setProxyUserByUid($uid);
+        
+        $group1 = 'Test Group #1';
+        $group2 = 'Test Group #2';
+        
+        $this->storage->addGroup($group1);
+        $this->storage->addGroup($group2);
+        
+        $this->storage->addGroupMember($group1, $testUserUid);
+        $this->storage->addGroupMember($group2, $testUserUid);
+        
+        $userGroups = $this->storage->fetchUserGroupRecords($testUserUid);
+        
+        $this->storage->removeGroup($group1);
+        $this->storage->removeGroup($group2);
+        
+        $this->assertSame($group1, $userGroups[0]['cn'][0]);
+        $this->assertSame($group2, $userGroups[1]['cn'][0]);
+    }
 }

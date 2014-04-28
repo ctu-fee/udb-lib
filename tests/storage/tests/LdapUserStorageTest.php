@@ -151,7 +151,7 @@ class LdapUserStorageTest extends \PHPUnit_Framework_TestCase
         
         $records = $this->storage->fetchUserRecords($filter);
         
-        $this->assertInstanceOf('Zend\Ldap\Collection', $records);
+        $this->assertInternalType('array', $records);
         
         foreach ($records as $record) {
             $this->assertTrue(isset($record['uid'][0]));
