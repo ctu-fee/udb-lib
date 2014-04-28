@@ -3,7 +3,9 @@
 return array(
     'ldap_storage' => array(
         'user_search_base_dn' => 'ou=people,o=example.org',
-        'user_search_size_limit' => 20
+        'user_search_size_limit' => 20,
+        'group_base_dn' => 'ou=groups,o=example.org',
+        'group_search_size_limit' => 50
     ),
     
     'ldap_client' => array(
@@ -21,6 +23,7 @@ return array(
     
     'tests' => array(
         'testuid' => 'testuser',
-        'testdn' => 'uid=testuser,ou=people,o=feld.cvut.cz'
+        'testdn' => 'uid=testuser,ou=people,o=example.org',
+        'test_group_name' => 'Test Group'
     )
 );

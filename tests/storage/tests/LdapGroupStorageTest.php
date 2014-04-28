@@ -50,4 +50,11 @@ class LdapGroupStorageTest extends \PHPUnit_Framework_TestCase
         
         $record = $this->storage->fetchGroupRecord('some nonexisting group');
     }
+
+
+    public function testFetchGroupRecords()
+    {
+        $records = $this->storage->fetchGroupRecords();
+        $this->assertInstanceOf('Zend\Ldap\Collection', $records);
+    }
 }

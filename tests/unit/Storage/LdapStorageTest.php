@@ -62,4 +62,77 @@ class LdapStorageTest extends \PHPUnit_Framework_TestCase
         $this->storage->setParam('group_base_dn', 'ou=groups,o=example.org');
         $this->assertSame('cn=Test Group,ou=groups,o=example.org', $this->storage->getGroupDnByName('Test Group'));
     }
+
+
+    public function testFetchGroupRecords()
+    {
+        $baseDn = 'o=base';
+        $sizelimit = 42;
+        $scope = \Zend\Ldap\Ldap::SEARCH_SCOPE_SUB;
+        $filter = $this->createFilterMock();
+        $ldapFilter = '(foo=bar)';
+        $records = $this->createLdapCollection();
+        
+        $this->storage->setParam(LdapStorage::PARAM_GROUP_BASE_DN, $baseDn);
+        $this->storage->setParam(LdapStorage::PARAM_GROUP_SEARCH_SIZE_LIMIT, $sizelimit);
+        
+        $filterConvertor = $this->createFilterConvertorMock();
+        $filterConvertor->expects($this->once())
+            ->method('convert')
+            ->with($filter)
+            ->will($this->returnValue($ldapFilter));
+        
+        $this->storage->setFilterConvertor($filterConvertor);
+        
+        $ldapClient = $this->createLdapClientMock();
+        $ldapClient->expects($this->once())
+            ->method('search')
+            ->with(array(
+            'filter' => $ldapFilter,
+            'baseDn' => $baseDn,
+            'scope' => $scope,
+            'sizelimit' => $sizelimit
+        ))
+            ->will($this->returnValue($records));
+        
+        $this->storage->setLdapClient($ldapClient);
+        
+        $this->assertSame($records, $this->storage->fetchGroupRecords($filter));
+    }
+    
+    /*
+     * 
+     */
+    protected function createFilterMock()
+    {
+        $filter = $this->getMock('Udb\Domain\Repository\Filter\FilterInterface');
+        
+        return $filter;
+    }
+
+
+    protected function createFilterConvertorMock()
+    {
+        $filterConvertor = $this->getMock('Udb\Domain\Storage\FilterConvertor\FilterConvertorInterface');
+        
+        return $filterConvertor;
+    }
+
+
+    protected function createLdapClientMock()
+    {
+        $ldapClient = $this->getMock('Zend\Ldap\Ldap');
+        
+        return $ldapClient;
+    }
+
+
+    protected function createLdapCollection()
+    {
+        $col = $this->getMockBuilder('Zend\Ldap\Collection')
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        return $col;
+    }
 }

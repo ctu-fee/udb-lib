@@ -155,6 +155,10 @@ class LdapStorage implements StorageInterface
     }
 
 
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\StorageInterface::fetchGroupRecord()
+     */
     public function fetchGroupRecord($groupName)
     {
         $groupDn = $this->getGroupDnByName($groupName);
@@ -164,9 +168,16 @@ class LdapStorage implements StorageInterface
     }
 
 
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\StorageInterface::fetchGroupRecords()
+     */
     public function fetchGroupRecords(FilterInterface $filter = null)
     {
-        $ldapFilter = $this->getFilterConvertor()->convert($filter);
+        $ldapFilter = '(cn=*)';
+        if (null !== $filter) {
+            $ldapFilter = $this->getFilterConvertor()->convert($filter);
+        }
         
         $records = $this->getLdapClient()->search(array(
             'filter' => $ldapFilter,
@@ -174,6 +185,8 @@ class LdapStorage implements StorageInterface
             'scope' => Ldap::SEARCH_SCOPE_SUB,
             'sizelimit' => $this->getParam(self::PARAM_GROUP_SEARCH_SIZE_LIMIT, 100)
         ));
+        
+        return $records;
     }
 
 
