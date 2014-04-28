@@ -2,6 +2,8 @@
 
 return array(
     'ldap_storage' => array(
+        'group_member_attribute_name' => 'uniqueMember',
+        'group_owner_attribute_name' => 'owner',
         'user_search_base_dn' => 'ou=people,o=example.org',
         'user_search_size_limit' => 20,
         'group_base_dn' => 'ou=groups,o=example.org',
@@ -22,8 +24,9 @@ return array(
     ),
     
     'tests' => array(
-        'testuid' => 'testuser',
-        'testdn' => 'uid=testuser,ou=people,o=example.org',
+        'test_user_uid' => 'testuser',
+        'test_user_dn' => 'uid=testuser,ou=people,o=example.org',
+        'test_admin_uid' => 'admin',
         'test_group_name' => 'Test Group'
     )
 );

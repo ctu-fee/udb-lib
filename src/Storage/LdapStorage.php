@@ -20,6 +20,8 @@ class LdapStorage implements StorageInterface
 
     const PARAM_GROUP_MEMBER_ATTRIBUTE_NAME = 'group_member_attribute_name';
 
+    const PARAM_GROUP_OWNER_ATTRIBUTE_NAME = 'group_owner_attribute_name';
+
     const PARAM_USER_BASE_DN = 'user_base_dn';
 
     const PARAM_USER_SEARCH_SIZE_LIMIT = 'user_search_size_limit';
@@ -208,50 +210,68 @@ class LdapStorage implements StorageInterface
     }
 
 
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\StorageInterface::fetchGroupMemberRecords()
+     */
     public function fetchGroupMemberRecords($groupName)
     {
-        $groupDn = $this->getGroupDnByName($groupName);
-        
-        $node = $this->getNode($groupDn);
-        $memberDns = $node->getAttribute($this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME));
-        
-        $records = array();
-        foreach ($memberDns as $userDn) {
-            $records[] = $this->getNode($userDn, true);
-        }
-        
-        return $records;
+        return $this->fetchUserRecordsFromGroupAttribute($groupName, $this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME));
     }
 
 
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\StorageInterface::addGroupMember()
+     */
     public function addGroupMember($groupName, $uid)
     {
         $userDn = $this->getUserDnByUid($uid);
         $groupDn = $this->getGroupDnByName($groupName);
         
-        $node = $this->getNode($groupDn);
-        $node->appendToAttribute($this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
-        $node->update();
+        $this->appendToNodeAttribute($groupDn, $this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
     }
 
 
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\StorageInterface::removeGroupMember()
+     */
     public function removeGroupMember($groupName, $uid)
     {
         $userDn = $this->getUserDnByUid($uid);
         $groupDn = $this->getGroupDnByName($groupName);
         
-        $node = $this->getNode($groupDn);
-        $node->removeFromAttribute($this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
-        $node->update();
+        $this->removeFromNodeAttribute($groupDn, $this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\StorageInterface::fetchGroupOwnerRecords()
+     */
+    public function fetchGroupOwnerRecords($groupName)
+    {
+        return $this->fetchUserRecordsFromGroupAttribute($groupName, $this->getRequiredParam(self::PARAM_GROUP_OWNER_ATTRIBUTE_NAME));
     }
 
 
     public function addGroupOwner($groupName, $uid)
-    {}
+    {
+        $userDn = $this->getUserDnByUid($uid);
+        $groupDn = $this->getGroupDnByName($groupName);
+        
+        $this->appendToNodeAttribute($groupDn, $this->getRequiredParam(self::PARAM_GROUP_OWNER_ATTRIBUTE_NAME), $userDn);
+    }
 
 
     public function removeGroupOwner($groupName, $uid)
-    {}
+    {
+        $userDn = $this->getUserDnByUid($uid);
+        $groupDn = $this->getGroupDnByName($groupName);
+        
+        $this->removeFromNodeAttribute($groupDn, $this->getRequiredParam(self::PARAM_GROUP_OWNER_ATTRIBUTE_NAME), $userDn);
+    }
 
 
     /**
@@ -387,6 +407,38 @@ class LdapStorage implements StorageInterface
         }
         
         return $node;
+    }
+
+
+    protected function appendToNodeAttribute($nodeDn, $attributeName, $attributeValue)
+    {
+        $node = $this->getNode($nodeDn);
+        $node->appendToAttribute($attributeName, $attributeValue);
+        $node->update();
+    }
+
+
+    protected function removeFromNodeAttribute($nodeDn, $attributeName, $attributeValue)
+    {
+        $node = $this->getNode($nodeDn);
+        $node->removeFromAttribute($attributeName, $attributeValue);
+        $node->update();
+    }
+
+
+    protected function fetchUserRecordsFromGroupAttribute($groupName, $attributeName)
+    {
+        $groupDn = $this->getGroupDnByName($groupName);
+        
+        $node = $this->getNode($groupDn);
+        $memberDns = $node->getAttribute($attributeName);
+        
+        $records = array();
+        foreach ($memberDns as $userDn) {
+            $records[] = $this->getNode($userDn, true);
+        }
+        
+        return $records;
     }
 
 

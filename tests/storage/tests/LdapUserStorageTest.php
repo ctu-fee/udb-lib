@@ -55,8 +55,8 @@ class LdapUserStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testGetUserDnByUid()
     {
-        $dn = $this->storage->getUserDnByUid($this->config->tests->get('testuid'));
-        $this->assertSame($this->config->tests->get('testdn'), $dn);
+        $dn = $this->storage->getUserDnByUid($this->config->tests->get('test_user_uid'));
+        $this->assertSame($this->config->tests->get('test_user_dn'), $dn);
     }
 
 
@@ -70,13 +70,13 @@ class LdapUserStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testSetProxyUserByUid()
     {
-        $this->assertTrue($this->storage->setProxyUserByUid($this->config->tests->get('testuid')));
+        $this->assertTrue($this->storage->setProxyUserByUid($this->config->tests->get('test_user_uid')));
     }
 
 
     public function testFetchUserRecord()
     {
-        $uid = $this->config->tests->get('testuid');
+        $uid = $this->config->tests->get('test_user_uid');
         $userData = $this->storage->fetchUserRecord($uid);
         
         $this->assertSame($uid, $userData['uid'][0]);
@@ -87,7 +87,7 @@ class LdapUserStorageTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Zend\Ldap\Exception\LdapException', "0x32 (Insufficient access; Insufficient 'write' privilege");
         
-        $uid = $this->config->tests->get('testuid');
+        $uid = $this->config->tests->get('test_user_uid');
         $this->storage->updateUserRecord($uid, array(
             'telephonenumber' => array(
                 '123'
@@ -99,7 +99,7 @@ class LdapUserStorageTest extends \PHPUnit_Framework_TestCase
     public function testUpdateUserRecord()
     {
         $attr = 'telephonenumber';
-        $uid = $this->config->tests->get('testuid');
+        $uid = $this->config->tests->get('test_user_uid');
         $this->storage->setProxyUserByUid($uid);
         $userData = $this->storage->fetchUserRecord($uid);
         
@@ -142,7 +142,7 @@ class LdapUserStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testFetchUserRecords()
     {
-        $uid = $this->config->tests->get('testuid');
+        $uid = $this->config->tests->get('test_user_uid');
         $this->storage->setProxyUserByUid($uid);
         
         $filter = new SimpleFilterAnd(array(
@@ -161,7 +161,7 @@ class LdapUserStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testFetchUserRecordsWithSizeLimit()
     {
-        $uid = $this->config->tests->get('testuid');
+        $uid = $this->config->tests->get('test_user_uid');
         $this->storage->setProxyUserByUid($uid);
         
         $countLimit = 5;

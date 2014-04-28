@@ -93,7 +93,7 @@ class LdapGroupStorageTest extends \PHPUnit_Framework_TestCase
         $this->storage->setProxyUserByUid($uid);
         
         $groupName = $this->config->tests->get('test_group_name');
-        $testUserUid = $this->config->tests->get('testuid');
+        $testUserUid = $this->config->tests->get('test_user_uid');
         
         $this->storage->addGroupMember($groupName, $testUserUid);
         $memberRecords = $this->storage->fetchGroupMemberRecords($groupName);
@@ -104,11 +104,45 @@ class LdapGroupStorageTest extends \PHPUnit_Framework_TestCase
         
         $this->assertEmpty($this->storage->fetchGroupMemberRecords($groupName));
     }
-    
-    
+
+
+    public function testAddAndRemoveGroupOwner()
+    {
+        $uid = $this->config->tests->get('test_admin_uid');
+        $this->storage->setProxyUserByUid($uid);
+        
+        $groupName = 'Test Group #42';
+        $testUserUid = $this->config->tests->get('test_user_uid');
+        
+        // create the tes group
+        $this->storage->addGroup($groupName);
+        // add the test user as an owner
+        $this->storage->addGroupOwner($groupName, $testUserUid);
+        
+        // check owners
+        $owners = $this->storage->fetchGroupOwnerRecords($groupName);
+        $this->assertSame($testUserUid, $owners[0]['uid'][0]);
+        
+        /* WAITING FOR IMPLEMENTATION AT THE LDAP SIDE
+        // set the test user as a proxy user and check if he is really an owner by adding a member
+        $this->storage->setProxyUserByUid($testUserUid);
+        $this->storage->addGroupMember($groupName, $testUserUid);
+        */
+        
+        // remove the test user as an owner
+        $this->storage->removeGroupOwner($groupName, $testUserUid);
+        
+        // check owners
+        $owners = $this->storage->fetchGroupOwnerRecords($groupName);
+        $this->assertEmpty($owners);
+        
+        $this->storage->removeGroup($groupName);
+    }
+
+
     public function testFetchUserGroupRecords()
     {
-        $testUserUid = $this->config->tests->get('testuid');
+        $testUserUid = $this->config->tests->get('test_user_uid');
         $uid = $this->config->tests->get('test_admin_uid');
         $this->storage->setProxyUserByUid($uid);
         
