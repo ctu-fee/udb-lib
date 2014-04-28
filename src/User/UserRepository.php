@@ -4,14 +4,14 @@ namespace Udb\Domain\User;
 
 use Zend\Stdlib\Hydrator\HydratorInterface;
 use Udb\Domain\Repository\Filter\FilterInterface;
-use Udb\Domain\Storage\StorageInterface;
+use Udb\Domain\Storage\UserStorageInterface;
 
 
 class UserRepository
 {
 
     /**
-     * @var StorageInterface
+     * @var UserStorageInterface
      */
     protected $storage;
 
@@ -33,8 +33,7 @@ class UserRepository
      * @param HydratorInterface $hydrator
      * @param UserFactoryInterface $factory
      */
-    public function __construct(StorageInterface $storage, HydratorInterface $hydrator = null, 
-        UserFactoryInterface $factory = null)
+    public function __construct(UserStorageInterface $storage, HydratorInterface $hydrator = null, UserFactoryInterface $factory = null)
     {
         $this->setStorage($storage);
         
@@ -51,7 +50,7 @@ class UserRepository
 
 
     /**
-     * @return StorageInterface
+     * @return UserStorageInterface
      */
     public function getStorage()
     {
@@ -60,9 +59,9 @@ class UserRepository
 
 
     /**
-     * @param StorageInterface $storage
+     * @param UserStorageInterface $storage
      */
-    public function setStorage(StorageInterface $storage)
+    public function setStorage(UserStorageInterface $storage)
     {
         $this->storage = $storage;
     }

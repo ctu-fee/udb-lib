@@ -5,8 +5,8 @@ namespace UdbTest\Domain\Storage;
 use Zend\Stdlib\Parameters;
 use Zend\Config\Config;
 use Zend\Ldap\Ldap;
-use Udb\Domain\Storage\LdapStorage;
 use Zend\Ldap\Attribute;
+use Udb\Domain\Storage\LdapStorage;
 
 
 class LdapGroupStorageTest extends \PHPUnit_Framework_TestCase

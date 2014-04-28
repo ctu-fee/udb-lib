@@ -11,7 +11,7 @@ use Udb\Domain\Repository\Filter\FilterInterface;
 use Udb\Domain\Util\ObjectParamsTrait;
 
 
-class LdapStorage implements StorageInterface
+class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterface, GroupStorageInterface
 {
     
     use ObjectParamsTrait;

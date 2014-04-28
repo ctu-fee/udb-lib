@@ -125,7 +125,7 @@ class UserRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     protected function createStorageMock()
     {
-        $storage = $this->getMock('Udb\Domain\Storage\StorageInterface');
+        $storage = $this->getMock('Udb\Domain\Storage\UserStorageInterface');
         
         return $storage;
     }
