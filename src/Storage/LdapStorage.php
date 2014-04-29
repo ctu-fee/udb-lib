@@ -256,6 +256,10 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     }
 
 
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\GroupStorageInterface::addGroupOwner()
+     */
     public function addGroupOwner($groupName, $uid)
     {
         $userDn = $this->getUserDnByUid($uid);
@@ -265,6 +269,10 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     }
 
 
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\GroupStorageInterface::removeGroupOwner()
+     */
     public function removeGroupOwner($groupName, $uid)
     {
         $userDn = $this->getUserDnByUid($uid);
@@ -304,13 +312,18 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     /**
      * Returns of OID values indicating the supported controls of the storage.
      *
+     * @throws Exception\GeneralException
      * @return array
      */
     public function getSupportedControls()
     {
-        $supportedControl = $this->getLdapClient()
-            ->getRootDse()
-            ->getAttribute('supportedcontrol');
+        try {
+            $supportedControl = $this->getLdapClient()
+                ->getRootDse()
+                ->getAttribute('supportedcontrol');
+        } catch (\Exception $e) {
+            throw new Exception\GeneralException('Cannot fetch supported controls', null, $e);
+        }
         
         if (! is_array($supportedControl)) {
             $supportedControl = array();
@@ -339,6 +352,13 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     }
 
 
+    /**
+     * Returns the corresponding group DN.
+     * 
+     * @param string $groupName
+     * @param string $nameAttribute
+     * @return string
+     */
     public function getGroupDnByName($groupName, $nameAttribute = 'cn')
     {
         $groupBaseDn = $this->getRequiredParam(self::PARAM_GROUP_BASE_DN);
@@ -351,6 +371,7 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
      * Sets a proxy user authorization by user DN.
      * 
      * @param string $userDn
+     * @throws Exception\GeneralException
      * @throws Exception\SetOptionException
      * @return boolean
      */
@@ -364,7 +385,12 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
             )
         );
         
-        $ldapResource = $this->getLdapClient()->getResource();
+        try {
+            $ldapResource = $this->getLdapClient()->getResource();
+        } catch (\Exception $e) {
+            throw new Exception\GeneralException('Cannot retrieve LDAP resource', null, $e);
+        }
+        
         if (! ldap_set_option($ldapResource, LDAP_OPT_SERVER_CONTROLS, $serverControls)) {
             throw new Exception\SetOptionException(sprintf("Error setting proxy authentication for DN '%s'", $userDn));
         }
@@ -410,6 +436,13 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     }
 
 
+    /**
+     * Appends an attribute value to a node.
+     * 
+     * @param string $nodeDn
+     * @param string $attributeName
+     * @param mixed $attributeValue
+     */
     protected function appendToNodeAttribute($nodeDn, $attributeName, $attributeValue)
     {
         $node = $this->getNode($nodeDn);
@@ -418,6 +451,13 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     }
 
 
+    /**
+     * Removes an attribute value from a node.
+     * 
+     * @param string $nodeDn
+     * @param string $attributeName
+     * @param mixed $attributeValue
+     */
     protected function removeFromNodeAttribute($nodeDn, $attributeName, $attributeValue)
     {
         $node = $this->getNode($nodeDn);
@@ -426,6 +466,14 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     }
 
 
+    /**
+     * Helper method - retrieves a list of user records, which has been represented by user DNs stored in a multivalue
+     * attribute in a group node (for example - "uniqueMember").
+     * 
+     * @param string $groupName
+     * @param string $attributeName
+     * @return array
+     */
     protected function fetchUserRecordsFromGroupAttribute($groupName, $attributeName)
     {
         $groupDn = $this->getGroupDnByName($groupName);
@@ -442,6 +490,13 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     }
 
 
+    /**
+     * Creates a new group entry.
+     * 
+     * @param string $groupName
+     * @param array $data
+     * @return array
+     */
     protected function createGroupEntry($groupName, array $data = array())
     {
         $groupEntry = array();
