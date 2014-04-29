@@ -149,7 +149,7 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     {
         $ldapFilter = $this->getFilterConvertor()->convert($filter);
         
-        $records = $this->getLdapClient()->search(array(
+        $records = $this->search(array(
             'filter' => $ldapFilter,
             'baseDn' => $this->getRequiredParam(self::PARAM_USER_BASE_DN),
             'scope' => Ldap::SEARCH_SCOPE_SUB,
@@ -165,7 +165,7 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
         $userDn = $this->getUserDnByUid($uid);
         $memberFilter = sprintf("(%s=%s)", $this->getRequiredParam(self::PARAM_GROUP_MEMBER_ATTRIBUTE_NAME), $userDn);
         
-        $records = $this->getLdapClient()->search(array(
+        $records = $this->search(array(
             'filter' => $memberFilter,
             'baseDn' => $this->getRequiredParam(self::PARAM_GROUP_BASE_DN),
             'scope' => Ldap::SEARCH_SCOPE_SUB,
@@ -199,7 +199,7 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
             $ldapFilter = $this->getFilterConvertor()->convert($filter);
         }
         
-        $records = $this->getLdapClient()->search(array(
+        $records = $this->search(array(
             'filter' => $ldapFilter,
             'baseDn' => $this->getRequiredParam(self::PARAM_GROUP_BASE_DN),
             'scope' => Ldap::SEARCH_SCOPE_SUB,
@@ -505,5 +505,24 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
         Attribute::setAttribute($groupEntry, 'objectClass', 'groupOfUniqueNames');
         
         return $groupEntry;
+    }
+
+
+    /**
+     * Performs an LDAP search.
+     * 
+     * @param array $params
+     * @throws Exception\SearchException
+     * @return mixed
+     */
+    protected function search(array $params)
+    {
+        try {
+            $records = $this->getLdapClient()->search($params);
+        } catch (\Exception $e) {
+            throw new Exception\SearchException(sprintf("Error while searching with filter '%s' and base DN '%s'", $params['filter'], $params['baseDn']), null, $e);
+        }
+        
+        return $records;
     }
 }
