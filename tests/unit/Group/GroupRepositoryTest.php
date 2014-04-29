@@ -115,10 +115,7 @@ class GroupRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $uid = 'testuser';
         
-        $user = $this->createUserMock();
-        $user->expects($this->once())
-            ->method('getUsername')
-            ->will($this->returnValue($uid));
+        $user = $this->createUserMock($uid);
         
         $records = array(
             array(
@@ -155,6 +152,78 @@ class GroupRepositoryTest extends \PHPUnit_Framework_TestCase
         
         $this->assertSame($groups, $repository->fetchUserGroups($user));
     }
+
+
+    public function testAddUserToGroup()
+    {
+        $uid = 'testuser';
+        $groupName = 'Test Group';
+        
+        $user = $this->createUserMock($uid);
+        $group = $this->createGroupMock($groupName);
+        
+        $storage = $this->createStorageMock();
+        $storage->expects($this->once())
+            ->method('addGroupMember')
+            ->with($groupName, $uid);
+        
+        $repository = new GroupRepository($storage);
+        $repository->addUserToGroup($user, $group);
+    }
+
+
+    public function testRemoveUserFromGroup()
+    {
+        $uid = 'testuser';
+        $groupName = 'Test Group';
+        
+        $user = $this->createUserMock($uid);
+        $group = $this->createGroupMock($groupName);
+        
+        $storage = $this->createStorageMock();
+        $storage->expects($this->once())
+            ->method('removeGroupMember')
+            ->with($groupName, $uid);
+        
+        $repository = new GroupRepository($storage);
+        $repository->removeUserFromGroup($user, $group);
+    }
+
+
+    public function testAddOwnerToGroup()
+    {
+        $uid = 'testuser';
+        $groupName = 'Test Group';
+        
+        $user = $this->createUserMock($uid);
+        $group = $this->createGroupMock($groupName);
+        
+        $storage = $this->createStorageMock();
+        $storage->expects($this->once())
+            ->method('addGroupOwner')
+            ->with($groupName, $uid);
+        
+        $repository = new GroupRepository($storage);
+        $repository->addOwnerToGroup($user, $group);
+    }
+
+
+    public function testRemoveOwnerFromGroup()
+    {
+        $uid = 'testuser';
+        $groupName = 'Test Group';
+        
+        $user = $this->createUserMock($uid);
+        $group = $this->createGroupMock($groupName);
+        
+        $storage = $this->createStorageMock();
+        $storage->expects($this->once())
+            ->method('removeGroupOwner')
+            ->with($groupName, $uid);
+        
+        $repository = new GroupRepository($storage);
+        $repository->removeOwnerFromGroup($user, $group);
+    }
     
     /*
      * 
@@ -167,9 +236,14 @@ class GroupRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    protected function createGroupMock()
+    protected function createGroupMock($groupName = null)
     {
         $group = $this->getMock('Udb\Domain\Group\Group');
+        if ($groupName) {
+            $group->expects($this->once())
+                ->method('getName')
+                ->will($this->returnValue($groupName));
+        }
         
         return $group;
     }
@@ -218,9 +292,14 @@ class GroupRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    protected function createUserMock()
+    protected function createUserMock($uid = null)
     {
         $user = $this->getMock('Udb\Domain\User\User');
+        if ($uid) {
+            $user->expects($this->once())
+                ->method('getUsername')
+                ->will($this->returnValue($uid));
+        }
         
         return $user;
     }

@@ -508,6 +508,8 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
         Attribute::setAttribute($groupEntry, 'objectClass', 'top');
         Attribute::setAttribute($groupEntry, 'objectClass', 'groupOfUniqueNames');
         
+        // FIXME - use data to set custom attributes
+        
         return $groupEntry;
     }
 

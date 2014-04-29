@@ -155,16 +155,52 @@ class GroupRepository
     }
 
 
+    /**
+     * Adds the user to the group.
+     * 
+     * @param User $user
+     * @param Group $group
+     */
     public function addUserToGroup(User $user, Group $group)
-    {}
+    {
+        $this->getStorage()->addGroupMember($group->getName(), $user->getUsername());
+    }
 
 
+    /**
+     * Removes the user from the group.
+     * 
+     * @param User $user
+     * @param Group $group
+     */
     public function removeUserFromGroup(User $user, Group $group)
-    {}
+    {
+        $this->getStorage()->removeGroupMember($group->getName(), $user->getUsername());
+    }
 
 
+    /**
+     * Adds the user as an owner of the group.
+     * 
+     * @param User $user
+     * @param Group $group
+     */
     public function addOwnerToGroup(User $user, Group $group)
-    {}
+    {
+        $this->getStorage()->addGroupOwner($group->getName(), $user->getUsername());
+    }
+
+
+    /**
+     * Removes the user from the owner list of the group.
+     * 
+     * @param User $user
+     * @param Group $group
+     */
+    public function removeOwnerFromGroup(User $user, Group $group)
+    {
+        $this->getStorage()->removeGroupOwner($group->getName(), $user->getUsername());
+    }
 
 
     public function addGroup(Group $group)
