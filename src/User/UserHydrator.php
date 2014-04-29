@@ -2,12 +2,12 @@
 
 namespace Udb\Domain\User;
 
-use Udb\Domain\Entity\Collection\LabelledUrlCollection;
 use Udb\Domain\Entity\LabelledUrl;
-use Zend\Stdlib\Hydrator\HydratorInterface;
+use Udb\Domain\Entity\Collection\LabelledUrlCollection;
+use Udb\Domain\Repository\Hydrator\AbstractStorageEntityHydrator;
 
 
-class UserHydrator implements HydratorInterface
+class UserHydrator extends AbstractStorageEntityHydrator
 {
 
     protected $fieldMap = array(
@@ -67,46 +67,12 @@ class UserHydrator implements HydratorInterface
 
 
     /**
-     * {@inhertidoc}
-     * @see \Zend\Stdlib\Extractor\ExtractionInterface::extract()
+     * {@inheritdoc}
+     * @see \Udb\Domain\Repository\Hydrator\AbstractStorageEntityHydrator::isValidEntity()
      */
-    public function extract($user)
-    {}
-
-
-    /**
-     * {@inhertidoc}
-     * @see \Zend\Stdlib\Hydrator\HydrationInterface::hydrate()
-     */
-    public function hydrate(array $data, $user)
+    protected function isValidEntity($user)
     {
-        /* @var $user \Udb\Domain\User\User */
-        foreach ($this->fieldMap as $field => $def) {
-            if (! isset($data[$field]) || ! is_array($data[$field]) || empty($data[$field])) {
-                continue;
-            }
-            
-            if (isset($def['multiple']) && $def['multiple']) {
-                $value = $data[$field];
-            } else {
-                $value = $data[$field][0];
-            }
-            
-            if (isset($def['transformMethod']) && method_exists($this, $def['transformMethod'])) {
-                
-                $value = call_user_func(array(
-                    $this,
-                    $def['transformMethod']
-                ), $value);
-            }
-            
-            if (isset($data[$field][0])) {
-                call_user_func(array(
-                    $user,
-                    $def['method']
-                ), $value);
-            }
-        }
+        return ($user instanceof User);
     }
 
 

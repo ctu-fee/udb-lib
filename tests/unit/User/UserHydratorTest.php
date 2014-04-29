@@ -10,6 +10,15 @@ class UserHydratorTest extends \PHPUnit_Framework_TestCase
 {
 
 
+    public function testHydrateWithInvalidEntity()
+    {
+        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidEntityException', 'Invalid variable/object');
+        
+        $hydrator = new UserHydrator();
+        $hydrator->hydrate(array(), new \stdClass());
+    }
+
+
     public function testHydrate()
     {
         $hydrator = new UserHydrator();
