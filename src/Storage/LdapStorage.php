@@ -160,6 +160,10 @@ class LdapStorage implements ProxyUserEnabledStorageInterface, UserStorageInterf
     }
 
 
+    /**
+     * {@inheritdoc}
+     * @see \Udb\Domain\Storage\UserStorageInterface::fetchUserGroupRecords()
+     */
     public function fetchUserGroupRecords($uid)
     {
         $userDn = $this->getUserDnByUid($uid);

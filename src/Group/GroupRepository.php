@@ -5,6 +5,7 @@ namespace Udb\Domain\Group;
 use Udb\Domain\Storage\GroupStorageInterface;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 use Udb\Domain\Repository\Filter\FilterInterface;
+use Udb\Domain\User\User;
 
 
 class GroupRepository
@@ -128,23 +129,30 @@ class GroupRepository
      * Fetches a collection of groups, which comply with the provided filter.
      * 
      * @param FilterInterface $filter
-     * @return \Udb\Domain\Group\GroupCollection
+     * @return GroupCollection
      */
     public function fetchGroups(FilterInterface $filter = null)
     {
         $records = $this->getStorage()->fetchGroupRecords($filter);
-        
-        $groups = new GroupCollection();
-        foreach ($records as $record) {
-            $groups->append($this->createGroup($record));
-        }
+        $groups = $this->createGroupCollection($records);
         
         return $groups;
     }
 
 
+    /**
+     * Returns a collection of groups, the provided user is member of.
+     * 
+     * @param User $user
+     * @return GroupCollection
+     */
     public function fetchUserGroups(User $user)
-    {}
+    {
+        $records = $this->getStorage()->fetchUserGroupRecords($user->getUsername());
+        $groups = $this->createGroupCollection($records);
+        
+        return $groups;
+    }
 
 
     public function addUserToGroup(User $user, Group $group)
@@ -171,11 +179,34 @@ class GroupRepository
     {}
 
 
+    /**
+     * Creates a group entity and hydrates it with the provided record data.
+     * 
+     * @param array $record
+     * @return Group
+     */
     protected function createGroup(array $record)
     {
         $group = $this->getFactory()->createGroup();
         $group = $this->getHydrator()->hydrate($record, $group);
         
         return $group;
+    }
+
+
+    /**
+     * Creates a group collection from the provided records.
+     * 
+     * @param array $records
+     * @return GroupCollection
+     */
+    protected function createGroupCollection(array $records)
+    {
+        $groups = new GroupCollection();
+        foreach ($records as $record) {
+            $groups->append($this->createGroup($record));
+        }
+        
+        return $groups;
     }
 }

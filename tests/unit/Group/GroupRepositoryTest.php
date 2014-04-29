@@ -41,6 +41,7 @@ class GroupRepositoryTest extends \PHPUnit_Framework_TestCase
             'foo' => 'bar'
         );
         $group = $this->createGroupMock();
+        $hydratedGroup = $this->createGroupMock();
         
         $storage = $this->createStorageMock();
         $storage->expects($this->once())
@@ -48,24 +49,16 @@ class GroupRepositoryTest extends \PHPUnit_Framework_TestCase
             ->with($groupName)
             ->will($this->returnValue($groupRecord));
         
-        $repository = $this->getMockBuilder('Udb\Domain\Group\GroupRepository')
-            ->setMethods(array(
-            'createGroup'
-        ))
-            ->disableOriginalConstructor()
-            ->getMock();
-        $repository->expects($this->once())
-            ->method('createGroup')
-            ->with($groupRecord)
-            ->will($this->returnValue($group));
+        $factory = $this->createFactoryMock($group);
+        $hydrator = $this->createHydratorMock($groupRecord, $group, $hydratedGroup);
         
-        $repository->setStorage($storage);
+        $repository = new GroupRepository($storage, $hydrator, $factory);
         
-        $this->assertSame($group, $repository->fetchGroup($groupName));
+        $this->assertSame($hydratedGroup, $repository->fetchGroup($groupName));
     }
 
 
-    public function testFetchUserGroups()
+    public function testFetchGroups()
     {
         $filter = $this->createFilterMock();
         $records = array(
@@ -116,6 +109,52 @@ class GroupRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($hydratedGroups[0], $resultGroups->get(0));
         $this->assertSame($hydratedGroups[1], $resultGroups->get(1));
     }
+
+
+    public function testFetchUserGroups()
+    {
+        $uid = 'testuser';
+        
+        $user = $this->createUserMock();
+        $user->expects($this->once())
+            ->method('getUsername')
+            ->will($this->returnValue($uid));
+        
+        $records = array(
+            array(
+                'cn' => array(
+                    0 => 'Test Group #1'
+                )
+            ),
+            array(
+                'cn' => array(
+                    0 => 'Test Group #2'
+                )
+            )
+        );
+        
+        $groups = $this->createGroupCollectionMock();
+        
+        $storage = $this->createStorageMock();
+        $storage->expects($this->once())
+            ->method('fetchUserGroupRecords')
+            ->with($uid)
+            ->will($this->returnValue($records));
+        
+        $repository = $this->getMockBuilder('Udb\Domain\Group\GroupRepository')
+            ->setMethods(array(
+            'createGroupCollection'
+        ))
+            ->disableOriginalConstructor()
+            ->getMock();
+        $repository->expects($this->once())
+            ->method('createGroupCollection')
+            ->with($records)
+            ->will($this->returnValue($groups));
+        $repository->setStorage($storage);
+        
+        $this->assertSame($groups, $repository->fetchUserGroups($user));
+    }
     
     /*
      * 
@@ -136,6 +175,14 @@ class GroupRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    protected function createGroupCollectionMock()
+    {
+        $groups = $this->getMock('Udb\Domain\Group\GroupCollection');
+        
+        return $groups;
+    }
+
+
     protected function createStorageMock()
     {
         $storage = $this->getMock('Udb\Domain\Storage\GroupStorageInterface');
@@ -144,18 +191,37 @@ class GroupRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    protected function createHydratorMock()
+    protected function createHydratorMock($groupRecord = null, $group = null, $hydratedGroup = null)
     {
         $hydrator = $this->getMock('Zend\Stdlib\Hydrator\HydratorInterface');
+        if ($groupRecord && $group && $hydratedGroup) {
+            $hydrator->expects($this->once())
+                ->method('hydrate')
+                ->with($groupRecord, $group)
+                ->will($this->returnValue($hydratedGroup));
+        }
         
         return $hydrator;
     }
 
 
-    protected function createFactoryMock()
+    protected function createFactoryMock($group = null)
     {
         $factory = $this->getMock('Udb\Domain\Group\GroupFactoryInterface');
+        if ($group) {
+            $factory->expects($this->once())
+                ->method('createGroup')
+                ->will($this->returnValue($group));
+        }
         
         return $factory;
+    }
+
+
+    protected function createUserMock()
+    {
+        $user = $this->getMock('Udb\Domain\User\User');
+        
+        return $user;
     }
 }
