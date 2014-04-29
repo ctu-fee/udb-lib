@@ -37,10 +37,19 @@ interface UserStorageInterface
 
 
     /**
-     * Returns the records of the groups, the user is member of.
+     * Returns all group members' records.
      *
-     * @param string $uid
+     * @param string $groupName
      * @return array
-    */
-    public function fetchUserGroupRecords($uid);
+     */
+    public function fetchGroupMemberRecords($groupName);
+
+
+    /**
+     * Fetch the owners of the group.
+     *
+     * @param string $groupName
+     * @return array
+     */
+    public function fetchGroupOwnerRecords($groupName);
 }

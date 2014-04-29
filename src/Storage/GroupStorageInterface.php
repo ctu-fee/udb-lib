@@ -28,15 +28,6 @@ interface GroupStorageInterface
 
 
     /**
-     * Returns all group members' records.
-     * 
-     * @param string $groupName
-     * @return array
-     */
-    public function fetchGroupMemberRecords($groupName);
-
-
-    /**
      * Add a member to the group.
      * 
      * @param string $groupName
@@ -55,12 +46,12 @@ interface GroupStorageInterface
 
 
     /**
-     * Fetch the owners of the group.
-     * 
-     * @param string $groupName
+     * Returns the records of the groups, the user is member of.
+     *
+     * @param string $uid
      * @return array
      */
-    public function fetchGroupOwnerRecords($groupName);
+    public function fetchUserGroupRecords($uid);
 
 
     /**
