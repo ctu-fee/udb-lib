@@ -39,6 +39,24 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
 
 
     /**
+     * @return array
+     */
+    public function getFieldMap()
+    {
+        return $this->fieldMap;
+    }
+
+
+    /**
+     * @param array $fieldMap
+     */
+    public function setFieldMap($fieldMap)
+    {
+        $this->fieldMap = $fieldMap;
+    }
+
+
+    /**
      * {@inhertidoc}
      * @see \Zend\Stdlib\Extractor\ExtractionInterface::extract()
      */
@@ -66,7 +84,6 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
             }
             
             if (isset($def['transformMethod']) && method_exists($this, $def['transformMethod'])) {
-                
                 $value = call_user_func(array(
                     $this,
                     $def['transformMethod']
