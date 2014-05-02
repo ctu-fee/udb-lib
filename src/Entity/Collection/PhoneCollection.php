@@ -22,6 +22,7 @@ class PhoneCollection extends AbstractStringValueObjectCollection
     /**
      * Creates a Phone value object from the provided value.
      * 
+     * @see \Udb\Domain\Entity\Collection\AbstractStringValueObjectCollection::createValueObject()
      * @param mixed $item
      * @return Phone
      */

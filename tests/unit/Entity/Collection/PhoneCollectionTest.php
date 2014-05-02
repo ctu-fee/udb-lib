@@ -46,7 +46,7 @@ class PhoneCollectionTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testSetWithArrayOfStrings()
+    public function testSetItemsWithArrayOfStrings()
     {
         $data = array(
             '+111 222 333 444',
