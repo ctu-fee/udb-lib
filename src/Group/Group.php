@@ -2,7 +2,9 @@
 
 namespace Udb\Domain\Group;
 
-use Udb\Domain\User\User;
+use Udb\Domain\Util\Value;
+use Udb\Domain\Entity\Exception\InvalidValueException;
+use Udb\Domain\Entity\Collection\UidCollection;
 
 
 /**
@@ -27,9 +29,9 @@ class Group
     protected $email;
 
     /**
-     * @var string
+     * @var UidCollection
      */
-    protected $ownerUid;
+    protected $owners;
 
 
     /**
@@ -87,19 +89,27 @@ class Group
 
 
     /**
-     * @return string
+     * @return UidCollection
      */
-    public function getOwnerUid()
+    public function getOwners()
     {
-        return $this->ownerUid;
+        return $this->owners;
     }
 
 
     /**
-     * @param string $ownerUid
+     * @param UidCollection|array $owners
      */
-    public function setOwnerUid($ownerUid)
+    public function setOwners($owners)
     {
-        $this->ownerUid = (string) $ownerUid;
+        if (! $owners instanceof UidCollection) {
+            if (! is_array($owners)) {
+                throw new InvalidValueException(sprintf("Invalid value '%s', expecting array or UidCollection", Value::getValueType($owners)));
+            }
+            
+            $owners = new UidCollection($owners);
+        }
+        
+        $this->owners = $owners;
     }
 }

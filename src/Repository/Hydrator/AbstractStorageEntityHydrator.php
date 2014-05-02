@@ -126,6 +126,10 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
                 throw new Exception\UndefinedSetterException(sprintf("Undefined setter for field '%s'", $field));
             }
             
+            if (! method_exists($entity, $def['setter'])) {
+                throw new Exception\UndefinedMethodException(sprintf("Undefined method '%s' for entity '%s' (field: '%s')", $def['setter'], get_class($entity), $field));
+            }
+            
             $value = null;
             if (isset($def['multiple']) && $def['multiple']) {
                 $value = $data[$field];
@@ -140,7 +144,6 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
                 ), $value);
             }
             
-            // FIXME - check if setter method exists
             if (null !== $value) {
                 call_user_func(array(
                     $entity,

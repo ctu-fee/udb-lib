@@ -14,17 +14,21 @@ class GroupTest extends \PHPUnit_Framework_TestCase
         $name = 'Test Group';
         $description = 'Test Group description';
         $email = 'test.group@example.org';
-        $ownerUid = 'testuser';
+        $owners = array(
+            'testuser1',
+            'testuser2'
+        );
         
         $group = new Group();
         $group->setName($name);
         $group->setDescription($description);
         $group->setEmail($email);
-        $group->setOwnerUid($ownerUid);
+        $group->setOwners($owners);
         
         $this->assertSame($name, $group->getName());
         $this->assertSame($description, $group->getDescription());
         $this->assertSame($email, $group->getEmail());
-        $this->assertSame($ownerUid, $group->getOwnerUid());
+        $this->assertSame($owners, $group->getOwners()
+            ->toPlainArray());
     }
 }
