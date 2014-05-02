@@ -2,6 +2,8 @@
 
 namespace Udb\Domain\User;
 
+use Udb\Domain\Entity\Collection\AbstractStringValueObjectCollection;
+use Udb\Domain\Entity\Collection\PhoneCollection;
 use Udb\Domain\Entity\LabelledUrl;
 use Udb\Domain\Entity\Collection\LabelledUrlCollection;
 use Udb\Domain\Repository\Hydrator\AbstractStorageEntityHydrator;
@@ -12,56 +14,77 @@ class UserHydrator extends AbstractStorageEntityHydrator
 
     protected $fieldMap = array(
         'employeenumber' => array(
-            'setter' => 'setId'
+            'setter' => 'setId',
+            'getter' => 'getId'
         ),
         'uid' => array(
-            'setter' => 'setUsername'
+            'setter' => 'setUsername',
+            'getter' => 'getUsername'
         ),
         'cn;lang-cs' => array(
-            'setter' => 'setFullName'
+            'setter' => 'setFullName',
+            'getter' => 'getFullName'
         ),
         'givenname;lang-cs' => array(
-            'setter' => 'setFirstName'
+            'setter' => 'setFirstName',
+            'getter' => 'getFirstName'
         ),
         'sn;lang-cs' => array(
-            'setter' => 'setLastName'
+            'setter' => 'setLastName',
+            'getter' => 'getLastName'
         ),
         'mail' => array(
-            'setter' => 'setEmail'
+            'setter' => 'setEmail',
+            'getter' => 'getEmail'
         ),
         'employeetype;lang-cs' => array(
-            'setter' => 'setEmployeeType'
+            'setter' => 'setEmployeeType',
+            'getter' => 'getEmployeeType'
         ),
         'entrystatus' => array(
-            'setter' => 'setStatus'
+            'setter' => 'setStatus',
+            'getter' => 'getStatus'
         ),
         'telephonenumber' => array(
             'setter' => 'setWorkPhones',
-            'multiple' => true
+            'getter' => 'getWorkPhones',
+            'multiple' => true,
+            'getterTransformMethod' => 'simpleCollectionToArray'
         ),
         'mobile' => array(
             'setter' => 'setMobilePhones',
-            'multiple' => true
+            'getter' => 'getMobilePhones',
+            'multiple' => true,
+            'getterTransformMethod' => 'simpleCollectionToArray'
         ),
         'roomnumber' => array(
             'setter' => 'setRooms',
-            'multiple' => true
+            'getter' => 'getRooms',
+            'multiple' => true,
+            'getterTransformMethod' => 'simpleCollectionToArray'
         ),
         'departmentnumber' => array(
-            'setter' => 'setDepartment'
+            'setter' => 'setDepartment',
+            'getter' => 'getDepartment'
         ),
         'labeleduri' => array(
             'setter' => 'setUrls',
+            'getter' => 'getUrls',
             'multiple' => true,
-            'setterTransformMethod' => 'transformUrls'
+            'setterTransformMethod' => 'transformUrls',
+            'getterTransformMethod' => 'urlsToArray'
         ),
         'mailforwardingaddress' => array(
             'setter' => 'setEmailForwardings',
-            'multiple' => true
+            'getter' => 'getEmailForwardings',
+            'multiple' => true,
+            'getterTransformMethod' => 'simpleCollectionToArray'
         ),
         'mailalternateaddress' => array(
             'setter' => 'setEmailAlternatives',
-            'multiple' => true
+            'getter' => 'getEmailAlternatives',
+            'multiple' => true,
+            'getterTransformMethod' => 'simpleCollectionToArray'
         )
     );
 
@@ -97,5 +120,34 @@ class UserHydrator extends AbstractStorageEntityHydrator
         }
         
         return $urlCollection;
+    }
+
+
+    /**
+     * Converts an AbstractStringValueObjectCollection to a plain array.
+     * 
+     * @param AbstractStringValueObjectCollection $collection
+     * @return string[]
+     */
+    protected function simpleCollectionToArray(AbstractStringValueObjectCollection $collection)
+    {
+        return $collection->toPlainArray();
+    }
+
+
+    /**
+     * Converts a LabelledUrlCollection to a plain array.
+     * 
+     * @param LabelledUrlCollection $urls
+     * @return string[]
+     */
+    protected function urlsToArray(LabelledUrlCollection $urls)
+    {
+        $urlData = array();
+        foreach ($urls as $url) {
+            $urlData[] = sprintf('%s %s', $url->getUrl(), $url->getLabel());
+        }
+        
+        return $urlData;
     }
 }

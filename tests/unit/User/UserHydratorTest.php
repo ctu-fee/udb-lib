@@ -2,6 +2,10 @@
 
 namespace UdbTest\Domain\User;
 
+use Udb\Domain\Entity\LabelledUrl;
+
+use Udb\Domain\Entity\Collection\LabelledUrlCollection;
+
 use Udb\Domain\User\User;
 use Udb\Domain\User\UserHydrator;
 
@@ -78,6 +82,91 @@ class UserHydratorTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testExtract()
+    {
+        $expectedData = array(
+            'employeenumber' => array(
+                123
+            ),
+            'uid' => array(
+                'testuser'
+            ),
+            'cn;lang-cs' => array(
+                'Test User'
+            ),
+            'givenname;lang-cs' => array(
+                'Test'
+            ),
+            'sn;lang-cs' => array(
+                'User'
+            ),
+            'mail' => array(
+                'testuser@example.org'
+            ),
+            'employeetype;lang-cs' => array(
+                'foo worker'
+            ),
+            'entrystatus' => array(
+                'active'
+            ),
+            'telephonenumber' => array(
+                '111 111 111',
+                '222 222 222'
+            ),
+            'mobile' => array(
+                '333 333 333',
+                '444 444 444'
+            ),
+            'roomnumber' => array(
+                'A111',
+                'V222'
+            ),
+            'departmentnumber' => array(
+                '112233'
+            ),
+            'labeleduri' => array(
+                'http://site.one.org/ Site One',
+                'http://site.two.org/ Site Two'
+            ),
+            'mailforwardingaddress' => array(
+                'testuser@imap',
+                'testuser@gmail.com'
+            ),
+            'mailalternateaddress' => array(
+                'test.user@example.org',
+                'user.test@example.org'
+            )
+        );
+        
+        $labelledUrls = new LabelledUrlCollection();
+        $labelledUrls->append(new LabelledUrl('http://site.one.org/', 'Site One'));
+        $labelledUrls->append(new LabelledUrl('http://site.two.org/', 'Site Two'));
+        
+        $user = new User();
+        $user->setId($expectedData['employeenumber'][0]);
+        $user->setUsername($expectedData['uid'][0]);
+        $user->setFullName($expectedData['cn;lang-cs'][0]);
+        $user->setFirstName($expectedData['givenname;lang-cs'][0]);
+        $user->setLastName($expectedData['sn;lang-cs'][0]);
+        $user->setEmail($expectedData['mail'][0]);
+        $user->setEmployeeType($expectedData['employeetype;lang-cs'][0]);
+        $user->setStatus($expectedData['entrystatus'][0]);
+        $user->setWorkPhones($expectedData['telephonenumber']);
+        $user->setMobilePhones($expectedData['mobile']);
+        $user->setRooms($expectedData['roomnumber']);
+        $user->setDepartment($expectedData['departmentnumber'][0]);
+        $user->setUrls($labelledUrls);
+        $user->setEmailForwardings($expectedData['mailforwardingaddress']);
+        $user->setEmailAlternatives($expectedData['mailalternateaddress']);
+        
+        $hydrator = new UserHydrator();
+        
+        $this->assertEquals($expectedData, $hydrator->extract($user));
+    }
+    
+    /*
+     * 
+     */
     protected function getTestUserData()
     {
         return array(
