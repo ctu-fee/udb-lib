@@ -53,7 +53,7 @@ class UserHydrator extends AbstractStorageEntityHydrator
         'labeleduri' => array(
             'setter' => 'setUrls',
             'multiple' => true,
-            'transformMethod' => 'transformUrls'
+            'setterTransformMethod' => 'transformUrls'
         ),
         'mailforwardingaddress' => array(
             'setter' => 'setEmailForwardings',

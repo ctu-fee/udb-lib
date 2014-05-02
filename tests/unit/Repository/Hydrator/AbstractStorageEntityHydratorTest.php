@@ -3,14 +3,23 @@
 namespace UdbTest\Domain\Repository\Hydrator;
 
 
-interface DummyClass
+interface DummyInterface
 {
+
+
+    public function getName();
 
 
     public function setName($name);
 
 
+    public function getMembers();
+
+
     public function setMembers(array $members);
+
+
+    public function getAddress();
 
 
     public function setAddress($address);
@@ -108,6 +117,79 @@ class AbstractStorageEntityHydratorTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testExtract()
+    {
+        $name = 'Foo Bar';
+        $members = array(
+            'member1',
+            'member2'
+        );
+        
+        $map = array(
+            'cn' => array(
+                'getter' => 'getName'
+            ),
+            'member' => array(
+                'getter' => 'getMembers',
+                'multiple' => true
+            ),
+            'address' => array(
+                'getter' => 'getAddress'
+            )
+        );
+        
+        $entity = $this->createEntityMock();
+        $entity->expects($this->once())
+            ->method('getName')
+            ->will($this->returnValue($name));
+        $entity->expects($this->once())
+            ->method('getMembers')
+            ->will($this->returnValue($members));
+        $entity->expects($this->once())
+            ->method('getAddress')
+            ->will($this->returnValue(null));
+        
+        $this->toggleIsValidEntity($this->hydrator, true);
+        $this->hydrator->setFieldMap($map);
+        
+        $data = $this->hydrator->extract($entity);
+        $expectedData = array(
+            'cn' => array(
+                0 => $name
+            ),
+            'member' => $members
+        );
+        
+        $this->assertEquals($expectedData, $data);
+    }
+
+
+    public function testExtractWithUndefinedEntityGetterMethod()
+    {
+        $this->setExpectedException('Udb\Domain\Repository\Hydrator\Exception\UndefinedMethodException', 'Undefined method');
+        
+        $map = array(
+            'foo' => array(
+                'getter' => 'getFoo'
+            )
+        );
+        $data = array(
+            'foo' => array(
+                'bar'
+            )
+        );
+        
+        $this->toggleIsValidEntity($this->hydrator, true);
+        $this->hydrator->setFieldMap($map);
+        
+        $entity = $this->createEntityMock();
+        
+        $this->hydrator->extract($entity);
+    }
+    
+    /*
+     * 
+     */
     protected function toggleIsValidEntity($hydrator, $valid)
     {
         $valid = (boolean) $valid;
@@ -118,9 +200,12 @@ class AbstractStorageEntityHydratorTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
     protected function createEntityMock()
     {
-        $entity = $this->getMock(__NAMESPACE__ . '\DummyClass');
+        $entity = $this->getMock(__NAMESPACE__ . '\DummyInterface');
         
         return $entity;
     }

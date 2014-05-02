@@ -18,8 +18,10 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
      *   - "setter" ... the name of the setter method to be used (hydration)
      *   - "getter" ... the name of the getter method to be used (extraction)
      *   - "multiple" ... if true, all values are used, if false or not set - only the first value is used
-     *   - "transformMethod" .. the name of the method to be used for custom data transformations, the
-     *   corresponding value is passed as an argument and the method should return the transformed value
+     *   - "setterTransformMethod" ... the name of the method to be used for custom data transformations 
+     *   during hydration, the corresponding value is passed as an argument and the method should return 
+     *   the transformed value
+     *   - "getterTransformMethod" ...
      * 
      * Example:
      * 
@@ -28,7 +30,7 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
      *         'setter' => 'setName',
      *         'getter' => 'getName',
      *         'multiple' => false,
-     *         'transformMethod' => 'normalizeCn'
+     *         'setterTransformMethod' => 'normalizeCn'
      *     ),
      *     
      *     ...
@@ -62,8 +64,49 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
      * {@inhertidoc}
      * @see \Zend\Stdlib\Extractor\ExtractionInterface::extract()
      */
-    public function extract($user)
-    {}
+    public function extract($entity)
+    {
+        $this->checkEntity($entity);
+        
+        $data = array();
+        foreach ($this->getFieldMap() as $field => $def) {
+            if (! isset($def['getter'])) {
+                continue;
+            }
+            
+            if (! method_exists($entity, $def['getter'])) {
+                throw new Exception\UndefinedMethodException(sprintf("Undefined method '%s' for entity '%s' (field: '%s')", $def['getter'], get_class($entity), $field));
+            }
+            
+            $value = call_user_func(array(
+                $entity,
+                $def['getter']
+            ));
+            
+            if (isset($def['getterTransformMethod']) && method_exists($this, $def['getterTransformMethod'])) {
+                $value = call_user_func(array(
+                    $this,
+                    $def['getterTransformMethod']
+                ), $value);
+            }
+            
+            if (null !== $value) {
+                if (isset($def['multiple']) && $def['multiple']) {
+                    if (! is_array($value)) {
+                        $value = array(
+                            $value
+                        );
+                    }
+                    
+                    $data[$field] = $value;
+                } else {
+                    $data[$field][0] = $value;
+                }
+            }
+        }
+        
+        return $data;
+    }
 
 
     /**
@@ -74,7 +117,7 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
     {
         $this->checkEntity($entity);
         
-        foreach ($this->fieldMap as $field => $def) {
+        foreach ($this->getFieldMap() as $field => $def) {
             if (! isset($data[$field]) || ! is_array($data[$field]) || empty($data[$field])) {
                 continue;
             }
@@ -90,13 +133,14 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
                 $value = $data[$field][0];
             }
             
-            if (isset($def['transformMethod']) && method_exists($this, $def['transformMethod'])) {
+            if (isset($def['setterTransformMethod']) && method_exists($this, $def['setterTransformMethod'])) {
                 $value = call_user_func(array(
                     $this,
-                    $def['transformMethod']
+                    $def['setterTransformMethod']
                 ), $value);
             }
             
+            // FIXME - check if setter method exists
             if (null !== $value) {
                 call_user_func(array(
                     $entity,
@@ -120,6 +164,13 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
         if (! $this->isValidEntity($entity)) {
             throw new InvalidEntityException(sprintf("Invalid variable/object '%s'", is_object($entity) ? get_class($entity) : gettype($entity)));
         }
+    }
+
+
+    protected function createExtractionFieldMap()
+    {
+        $extractionMap = array();
+        foreach ($this->getFieldMap() as $def) {}
     }
 
 

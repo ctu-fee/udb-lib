@@ -28,7 +28,7 @@ class GroupHydrator extends AbstractStorageEntityHydrator
         ),
         'owner' => array(
             'setter' => 'setOwnerUid',
-            'transformMethod' => 'extractUidFromDn'
+            'setterTransformMethod' => 'extractUidFromDn'
         )
     );
 
