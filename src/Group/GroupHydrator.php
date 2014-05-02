@@ -18,16 +18,16 @@ class GroupHydrator extends AbstractStorageEntityHydrator
      */
     protected $fieldMap = array(
         'cn' => array(
-            'method' => 'setName'
+            'setter' => 'setName'
         ),
         'description' => array(
-            'method' => 'setDescription'
+            'setter' => 'setDescription'
         ),
         'mail' => array(
-            'method' => 'setEmail'
+            'setter' => 'setEmail'
         ),
         'owner' => array(
-            'method' => 'setOwnerUid',
+            'setter' => 'setOwnerUid',
             'transformMethod' => 'extractUidFromDn'
         )
     );

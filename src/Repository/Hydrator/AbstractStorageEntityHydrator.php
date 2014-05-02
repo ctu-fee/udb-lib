@@ -15,7 +15,8 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
     /**
      * Defines the mappings between the storage field name and the entity setter.
      * The keys are the storage field names. The values are arrays with specific values:
-     *   - "method" ... the name of the setter method to be used
+     *   - "setter" ... the name of the setter method to be used (hydration)
+     *   - "getter" ... the name of the getter method to be used (extraction)
      *   - "multiple" ... if true, all values are used, if false or not set - only the first value is used
      *   - "transformMethod" .. the name of the method to be used for custom data transformations, the
      *   corresponding value is passed as an argument and the method should return the transformed value
@@ -24,7 +25,8 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
      * 
      * array(
      *     'cn' => array(
-     *         'method' => 'setName',
+     *         'setter' => 'setName',
+     *         'getter' => 'getName',
      *         'multiple' => false,
      *         'transformMethod' => 'normalizeCn'
      *     ),
@@ -77,6 +79,11 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
                 continue;
             }
             
+            if (! isset($def['setter'])) {
+                throw new Exception\UndefinedSetterException(sprintf("Undefined setter for field '%s'", $field));
+            }
+            
+            $value = null;
             if (isset($def['multiple']) && $def['multiple']) {
                 $value = $data[$field];
             } else {
@@ -90,10 +97,10 @@ abstract class AbstractStorageEntityHydrator implements HydratorInterface
                 ), $value);
             }
             
-            if (isset($data[$field][0])) {
+            if (null !== $value) {
                 call_user_func(array(
                     $entity,
-                    $def['method']
+                    $def['setter']
                 ), $value);
             }
         }

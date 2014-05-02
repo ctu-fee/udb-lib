@@ -12,55 +12,55 @@ class UserHydrator extends AbstractStorageEntityHydrator
 
     protected $fieldMap = array(
         'employeenumber' => array(
-            'method' => 'setId'
+            'setter' => 'setId'
         ),
         'uid' => array(
-            'method' => 'setUsername'
+            'setter' => 'setUsername'
         ),
         'cn;lang-cs' => array(
-            'method' => 'setFullName'
+            'setter' => 'setFullName'
         ),
         'givenname;lang-cs' => array(
-            'method' => 'setFirstName'
+            'setter' => 'setFirstName'
         ),
         'sn;lang-cs' => array(
-            'method' => 'setLastName'
+            'setter' => 'setLastName'
         ),
         'mail' => array(
-            'method' => 'setEmail'
+            'setter' => 'setEmail'
         ),
         'employeetype;lang-cs' => array(
-            'method' => 'setEmployeeType'
+            'setter' => 'setEmployeeType'
         ),
         'entrystatus' => array(
-            'method' => 'setStatus'
+            'setter' => 'setStatus'
         ),
         'telephonenumber' => array(
-            'method' => 'setWorkPhones',
+            'setter' => 'setWorkPhones',
             'multiple' => true
         ),
         'mobile' => array(
-            'method' => 'setMobilePhones',
+            'setter' => 'setMobilePhones',
             'multiple' => true
         ),
         'roomnumber' => array(
-            'method' => 'setRooms',
+            'setter' => 'setRooms',
             'multiple' => true
         ),
         'departmentnumber' => array(
-            'method' => 'setDepartment'
+            'setter' => 'setDepartment'
         ),
         'labeleduri' => array(
-            'method' => 'setUrls',
+            'setter' => 'setUrls',
             'multiple' => true,
             'transformMethod' => 'transformUrls'
         ),
         'mailforwardingaddress' => array(
-            'method' => 'setEmailForwardings',
+            'setter' => 'setEmailForwardings',
             'multiple' => true
         ),
         'mailalternateaddress' => array(
-            'method' => 'setEmailAlternatives',
+            'setter' => 'setEmailAlternatives',
             'multiple' => true
         )
     );

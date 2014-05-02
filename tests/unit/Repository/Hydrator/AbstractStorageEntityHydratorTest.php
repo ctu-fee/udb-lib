@@ -3,6 +3,20 @@
 namespace UdbTest\Domain\Repository\Hydrator;
 
 
+interface DummyClass
+{
+
+
+    public function setName($name);
+
+
+    public function setMembers(array $members);
+
+
+    public function setAddress($address);
+}
+
+
 class AbstractStorageEntityHydratorTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -30,32 +44,69 @@ class AbstractStorageEntityHydratorTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    
+    public function testHydrateWithUndefinedSetter()
+    {
+        $this->setExpectedException('Udb\Domain\Repository\Hydrator\Exception\UndefinedSetterException', 'Undefined setter for field');
+        
+        $data = array(
+            'cn' => array(
+                0 => 'Foo Bar'
+            )
+        );
+        $map = array(
+            'cn' => array()
+        );
+        
+        $entity = $this->createEntityMock();
+        
+        $this->toggleIsValidEntity($this->hydrator, true);
+        $this->hydrator->setFieldMap($map);
+        $this->hydrator->hydrate($data, $entity);
+    }
+
+
     public function testHydrate()
     {
-        $this->markTestIncomplete();
         $map = array(
             'cn' => array(
-                'method' => 'setName'
+                'setter' => 'setName'
+            ),
+            'member' => array(
+                'setter' => 'setMembers',
+                'multiple' => true
+            ),
+            'address' => array(
+                'setter' => 'setAddress',
+                'transformMethod' => 'transformAddress'
             )
         );
         
         $data = array(
             'cn' => array(
                 0 => 'Test Name'
-            )
+            ),
+            'member' => array(
+                0 => 'member1',
+                1 => 'member2'
+            ),
+            'address' => array()
         );
         
-        $entity = $this->getMock('stdClass');
+        $entity = $this->createEntityMock();
         $entity->expects($this->once())
             ->method('setName')
-            ->with('Test Name');
+            ->with($data['cn'][0]);
+        $entity->expects($this->once())
+            ->method('setMembers')
+            ->with($data['member']);
+        $entity->expects($this->never())
+            ->method('setAddress');
         
         $this->toggleIsValidEntity($this->hydrator, true);
         $this->hydrator->setFieldMap($map);
         $this->hydrator->hydrate($data, $entity);
     }
-    
+
 
     protected function toggleIsValidEntity($hydrator, $valid)
     {
@@ -64,5 +115,13 @@ class AbstractStorageEntityHydratorTest extends \PHPUnit_Framework_TestCase
         $hydrator->expects($this->any())
             ->method('isValidEntity')
             ->will($this->returnValue($valid));
+    }
+
+
+    protected function createEntityMock()
+    {
+        $entity = $this->getMock(__NAMESPACE__ . '\DummyClass');
+        
+        return $entity;
     }
 }
