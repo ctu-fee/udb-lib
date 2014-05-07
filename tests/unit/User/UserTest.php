@@ -113,7 +113,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     public function testSetWorkPhonesWithInvalidValue()
     {
-        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting PhoneCollection or array');
+        $this->setExpectedException('InvalidArgumentException');
         
         $user = new User();
         $user->setWorkPhones('invalid');
@@ -147,7 +147,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     public function testSetMobilePhonesWithInvalidValue()
     {
-        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting PhoneCollection or array');
+        $this->setExpectedException('InvalidArgumentException');
         
         $user = new User();
         $user->setMobilePhones('invalid');
@@ -190,7 +190,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     public function testSetEmailForwardingsWithInvalidValue()
     {
-        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting EmailAddressCollection or array');
+        $this->setExpectedException('InvalidArgumentException');
         
         $user = new User();
         $user->setEmailForwardings('invalid');
@@ -224,7 +224,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     public function testSetEmailAlternativesWithInvalidValue()
     {
-        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting EmailAddressCollection or array');
+        $this->setExpectedException('InvalidArgumentException');
         
         $user = new User();
         $user->setEmailAlternatives('invalid');
@@ -258,7 +258,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     public function testSetRoomsWithInvalidValue()
     {
-        $this->setExpectedException('Udb\Domain\Entity\Exception\InvalidValueException', 'Expecting RoomCollection or array');
+        $this->setExpectedException('InvalidArgumentException');
         
         $user = new User();
         $user->setRooms('invalid');

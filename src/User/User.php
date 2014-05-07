@@ -2,6 +2,7 @@
 
 namespace Udb\Domain\User;
 
+use Udb\Domain\Util\InitCollectionTrait;
 use Udb\Domain\Entity\Exception\InvalidValueException;
 use Udb\Domain\Entity\Collection\RoomCollection;
 use Udb\Domain\Entity\Collection\LabelledUrlCollection;
@@ -14,6 +15,14 @@ use Udb\Domain\Entity\Collection\PhoneCollection;
  */
 class User
 {
+    
+    use InitCollectionTrait;
+
+    const CLASS_EMAIL_ADDRESS_COLLECTION = 'Udb\Domain\Entity\Collection\EmailAddressCollection';
+
+    const CLASS_PHONE_COLLECTION = 'Udb\Domain\Entity\Collection\PhoneCollection';
+
+    const CLASS_ROOM_COLLECTION = 'Udb\Domain\Entity\Collection\RoomCollection';
 
     /**
      * @var int
@@ -257,12 +266,7 @@ class User
      */
     public function setWorkPhones($workPhones)
     {
-        if (! $workPhones instanceof PhoneCollection) {
-            $this->checkCollectionData($workPhones, 'PhoneCollection');
-            $workPhones = new PhoneCollection($workPhones);
-        }
-        
-        $this->workPhones = $workPhones;
+        $this->workPhones = $this->initCollection($workPhones, self::CLASS_PHONE_COLLECTION);
     }
 
 
@@ -284,12 +288,7 @@ class User
      */
     public function setMobilePhones($mobilePhones)
     {
-        if (! $mobilePhones instanceof PhoneCollection) {
-            $this->checkCollectionData($mobilePhones, 'PhoneCollection');
-            $mobilePhones = new PhoneCollection($mobilePhones);
-        }
-        
-        $this->mobilePhones = $mobilePhones;
+        $this->mobilePhones = $this->initCollection($mobilePhones, self::CLASS_PHONE_COLLECTION);
     }
 
 
@@ -311,12 +310,7 @@ class User
      */
     public function setRooms($rooms)
     {
-        if (! $rooms instanceof RoomCollection) {
-            $this->checkCollectionData($rooms, 'RoomCollection');
-            $rooms = new RoomCollection($rooms);
-        }
-        
-        $this->rooms = $rooms;
+        $this->rooms = $this->initCollection($rooms, self::CLASS_ROOM_COLLECTION);
     }
 
 
@@ -378,12 +372,7 @@ class User
      */
     public function setEmailForwardings($emailForwardings)
     {
-        if (! $emailForwardings instanceof EmailAddressCollection) {
-            $this->checkCollectionData($emailForwardings, 'EmailAddressCollection');
-            $emailForwardings = new EmailAddressCollection($emailForwardings);
-        }
-        
-        $this->emailForwardings = $emailForwardings;
+        $this->emailForwardings = $this->initCollection($emailForwardings, self::CLASS_EMAIL_ADDRESS_COLLECTION);
     }
 
 
@@ -405,26 +394,6 @@ class User
      */
     public function setEmailAlternatives($emailAlternatives)
     {
-        if (! $emailAlternatives instanceof EmailAddressCollection) {
-            $this->checkCollectionData($emailAlternatives, 'EmailAddressCollection');
-            $emailAlternatives = new EmailAddressCollection($emailAlternatives);
-        }
-        
-        $this->emailAlternatives = $emailAlternatives;
-    }
-
-
-    /**
-     * Checks if the provided data are suitable for a collection.
-     * 
-     * @param mixed $value
-     * @param string $collectionName
-     * @throws Exception\InvalidValueException
-     */
-    protected function checkCollectionData($value, $collectionName)
-    {
-        if (! is_array($value)) {
-            throw new InvalidValueException(sprintf("Expecting %s or array", $collectionName));
-        }
+        $this->emailAlternatives = $this->initCollection($emailAlternatives, self::CLASS_EMAIL_ADDRESS_COLLECTION);
     }
 }
