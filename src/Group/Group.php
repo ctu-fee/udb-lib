@@ -2,6 +2,8 @@
 
 namespace Udb\Domain\Group;
 
+use Udb\Domain\Util\InitCollectionTrait;
+use Udb\Domain\Entity\Collection\EmailAddressCollection;
 use Udb\Domain\Util\Value;
 use Udb\Domain\Entity\Exception\InvalidValueException;
 use Udb\Domain\Entity\Collection\UidCollection;
@@ -12,6 +14,12 @@ use Udb\Domain\Entity\Collection\UidCollection;
  */
 class Group
 {
+    
+    use InitCollectionTrait;
+
+    const CLASS_EMAIL_ADDRESS_COLLECTION = 'Udb\Domain\Entity\Collection\EmailAddressCollection';
+
+    const CLASS_UID_COLLECTION = 'Udb\Domain\Entity\Collection\UidCollection';
 
     /**
      * @var string
@@ -26,12 +34,27 @@ class Group
     /**
      * @var string
      */
+    protected $departmentNumber;
+
+    /**
+     * @var string
+     */
     protected $email;
+
+    /**
+     * @var EmailAddressCollection
+     */
+    protected $emailAlternatives;
 
     /**
      * @var UidCollection
      */
     protected $owners;
+
+    /**
+     * @var boolean
+     */
+    protected $dynamic;
 
 
     /**
@@ -73,6 +96,24 @@ class Group
     /**
      * @return string
      */
+    public function getDepartmentNumber()
+    {
+        return $this->departmentNumber;
+    }
+
+
+    /**
+     * @param string $departmentNumber
+     */
+    public function setDepartmentNumber($departmentNumber)
+    {
+        $this->departmentNumber = $departmentNumber;
+    }
+
+
+    /**
+     * @return string
+     */
     public function getEmail()
     {
         return $this->email;
@@ -85,6 +126,24 @@ class Group
     public function setEmail($email)
     {
         $this->email = (string) $email;
+    }
+
+
+    /**
+     * @return EmailAddressCollection
+     */
+    public function getEmailAlternatives()
+    {
+        return $this->emailAlternatives;
+    }
+
+
+    /**
+     * @param EmailAddressCollection|array $emailAlternatives
+     */
+    public function setEmailAlternatives($emailAlternatives)
+    {
+        $this->emailAlternatives = $this->initCollection($emailAlternatives, self::CLASS_EMAIL_ADDRESS_COLLECTION);
     }
 
 
@@ -102,14 +161,24 @@ class Group
      */
     public function setOwners($owners)
     {
-        if (! $owners instanceof UidCollection) {
-            if (! is_array($owners)) {
-                throw new InvalidValueException(sprintf("Invalid value '%s', expecting array or UidCollection", Value::getValueType($owners)));
-            }
-            
-            $owners = new UidCollection($owners);
-        }
-        
-        $this->owners = $owners;
+        $this->owners = $this->initCollection($owners, self::CLASS_UID_COLLECTION);
+    }
+
+
+    /**
+     * @return boolean
+     */
+    public function isDynamic()
+    {
+        return $this->dynamic;
+    }
+
+
+    /**
+     * @param boolean $dynamic
+     */
+    public function setDynamic($dynamic)
+    {
+        $this->dynamic = (boolean) $dynamic;
     }
 }
