@@ -13,7 +13,7 @@ class ObjectParamsTraitTest extends \PHPUnit_Framework_TestCase
     {
         $params = new Parameters();
         
-        $trait = $this->getObjectForTrait('Udb\Domain\Util\ObjectParamsTrait');
+        $trait = $this->createTraitMock();
         $trait->setParams($params);
         
         $this->assertSame($params, $trait->getParams());
@@ -34,7 +34,7 @@ class ObjectParamsTraitTest extends \PHPUnit_Framework_TestCase
             'foo' => 'bar'
         ));
         
-        $trait = $this->getObjectForTrait('Udb\Domain\Util\ObjectParamsTrait');
+        $trait = $this->createTraitMock();
         $trait->setParams($params);
         
         $this->assertSame('bar', $trait->getParam('foo'));
@@ -47,7 +47,7 @@ class ObjectParamsTraitTest extends \PHPUnit_Framework_TestCase
             'foo' => 'bar'
         ));
         
-        $trait = $this->getObjectForTrait('Udb\Domain\Util\ObjectParamsTrait');
+        $trait = $this->createTraitMock();
         $trait->setParams($params);
         
         $this->assertSame('bar1', $trait->getParam('foo1', 'bar1'));
@@ -56,7 +56,7 @@ class ObjectParamsTraitTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRequiredParam()
     {
-        $trait = $this->getObjectForTrait('Udb\Domain\Util\ObjectParamsTrait');
+        $trait = $this->createTraitMock();
         $trait->setParam('foo', 'bar');
         
         $this->assertSame('bar', $trait->getParam('foo'));
@@ -67,7 +67,7 @@ class ObjectParamsTraitTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Udb\Domain\Util\Exception\MissingParamException', 'Missing required parameter');
         
-        $trait = $this->getObjectForTrait('Udb\Domain\Util\ObjectParamsTrait');
+        $trait = $this->createTraitMock();
         $trait->getRequiredParam('missing_param');
     }
 
